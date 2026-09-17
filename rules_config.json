@@ -1,47 +1,92 @@
 {
-  "max_matches": 20,
+  "version": "FORMAL-2026-09-17",
   "timezone": "America/New_York",
+  "max_matches": 20,
   "formula_a": {
-    "name": "Formula A",
-    "ranking_source": "current official competition table at request time; include completed matches that day",
-    "fixed_rows": {"home": 16, "away": 50},
-    "fixtures": "previous 3 actual first-team matches + current match + next 2 confirmed first-team matches, all competitions including confirmed friendlies",
-    "days_formula": "Rest Days = current date - previous match date - 1",
-    "competition_specific_stats": true,
-    "fields": ["rank","points","goal_difference","games_played","remaining_games","max_points","avg_goals_scored","avg_goals_conceded","form","coach_style","odds","intention","notes"],
-    "coach_style_values": ["进攻","微攻","微守","防守"]
+    "ranking": "At request time, use official latest actual ordering; include already completed matches that day; exclude live matches; never override official order with homemade tiebreak.",
+    "ranking_context": "Use the current match competition standings when that competition has a standings table. Domestic league matches use domestic league official table.",
+    "fixed_rows": {
+      "home_team_row": 16,
+      "away_team_row": 50
+    },
+    "fixtures": "Previous 3 actual first-team matches + current match + next 2 confirmed first-team matches, true chronological order, ALL competitions, including confirmed club friendlies.",
+    "stats_scope": "Form, Avg Goal Scored and Avg Goal Conceded are calculated ONLY in the analyzed match's competition. If no sample exists, keep blank.",
+    "days": "Rest Days = later match calendar date - earlier match calendar date - 1 after converting schedules to America/New_York.",
+    "coach_style": [
+      "进攻",
+      "微攻",
+      "微守",
+      "防守"
+    ],
+    "single_page": true
   },
   "formula_b": {
-    "name": "Formula B / UCL template",
-    "scope": "UEFA Champions League",
-    "ranking_source": "current UCL official table",
-    "fatigue": "Not Tired/Tired/Very Tired based on previous actual first-team matches",
-    "future_density": "❌/☑️/☑️×2",
-    "next_3": "next 3 first-team matches, all competitions",
-    "ucl_fixtures": 8,
-    "ucl_table": true,
-    "last5_ucl_wdl": true,
-    "intent": "blank unless explicitly requested"
+    "scope": "UEFA Champions League only",
+    "ranking": "Use latest official UCL total table at request time.",
+    "header": "UCL points to the left of team name; domestic league name to the right.",
+    "fatigue": {
+      "Not Tired": "previous match to current >=4 rest days",
+      "Tired": "previous match to current <=3 rest days",
+      "Very Tired": "previous match to current <=3 AND second previous to previous <=3"
+    },
+    "density": "Current→next1 >=4 => ❌; <=3 => ☑️; if next1→next2 <=3 => ☑️×2.",
+    "next3": "Next 3 confirmed first-team matches after current, all competitions, ET.",
+    "ucl_fixtures": "Full 8 UCL league-phase fixtures; played fixtures include scores.",
+    "ucl_table": "Complete current UCL total table on same worksheet right side, plus Form/WDL when available.",
+    "intent": "Leave intent blank unless explicitly requested."
   },
   "formula_c": {
-    "name": "Formula C",
-    "ranking_source": "use analyzed competition current official table whenever that competition has its own table; otherwise domestic official table",
+    "ranking": "Use analyzed competition latest official table if independent table exists; otherwise domestic official table.",
     "fatigue": {
-      "not_tired": "current-to-last Rest Days >= 4",
-      "tired": "current-to-last Rest Days <= 3",
-      "very_tired": "current-to-last <=3 AND last-to-second-last <=3"
+      "Not Tired": "current-to-last rest days >=4",
+      "Tired": "current-to-last <=3",
+      "Very Tired": "current-to-last <=3 AND last-to-second-last <=3"
     },
-    "future_density": {
-      "rule": "start from current match; current→next1 <=3 gives ☑️; if next1→next2 <=3 gives ☑️×2; otherwise ☑️; >=4 on first check gives ❌"
+    "density": "❌ / ☑️ / ☑️×2 only; no third check.",
+    "next3": "Next 3 confirmed first-team matches after current across all competitions including confirmed club friendlies.",
+    "intent_labels": [
+      "Must Win",
+      "Want Win",
+      "Hope Win",
+      "Don't Lose",
+      "---"
+    ],
+    "must_win": "Only actual necessity supported by competition mathematics/qualification/title/relegation/knockout situation.",
+    "want_win": "Requires clear evidence of both motivation and realistic ability/conditions to beat opponent. Strength tier alone never enough.",
+    "hope_win": "Positive win preference but evidence not strong enough for Want Win.",
+    "dont_lose_gate": "Only candidate after old factors lean Don't Lose AND (next opponent is 优 OR both next two opponents are each two strength levels above this team). Current strong opponent alone is insufficient.",
+    "same_strength": "Same/close strength and no clear basis => ---.",
+    "factors": [
+      "competition format",
+      "points",
+      "goal difference",
+      "remaining fixtures",
+      "qualification math",
+      "home/away",
+      "last 5 H2H",
+      "market/squad value",
+      "coach style",
+      "player quality",
+      "confirmed/expected lineup",
+      "rotation",
+      "injuries/suspensions",
+      "odds/market",
+      "current form",
+      "future priority",
+      "coach pre-match comments",
+      "fatigue/density",
+      "next two opponent strength",
+      "relative importance"
+    ],
+    "uel": {
+      "table": "Complete current 36-team total table",
+      "fixtures": 8,
+      "schedule_affects_intent": true
     },
-    "next_3": "next 3 confirmed first-team matches in chronological order, all competitions including confirmed friendlies",
-    "intent_labels": ["Must Win","Want Win","Hope Win","Don't Lose","---"],
-    "want_win": "only when clearly enough strength and conditions exist to beat opponent; otherwise Hope Win",
-    "dont_lose_gate": "after all old factors support Don't Lose, next opponent must be 优 OR both next two opponents must each be two strength tiers above",
-    "same_strength_rule": "if teams are close and no clear basis, use ---",
-    "uefa_strength_tiers": ["差","中","良","优"],
-    "europa": {"total_table": true, "teams": 36, "league_phase_fixtures": 8, "full_schedule_affects_intent": true},
-    "conference": {"total_table": true, "teams": 36, "league_phase_fixtures": 6, "full_schedule_affects_intent": true},
-    "intent_factors": ["competition format","points","goal difference","remaining fixtures","qualification math","home/away","recent form","H2H","squad value","coach style","player quality","expected/confirmed lineup","rotation","injuries/suspensions","odds/market","coach comments","fatigue","next two opponents strength","upcoming priority","UEFA full 8/6-match schedule and home/away opportunity cost"]
+    "uecl": {
+      "table": "Complete current 36-team total table",
+      "fixtures": 6,
+      "schedule_affects_intent": true
+    }
   }
 }
