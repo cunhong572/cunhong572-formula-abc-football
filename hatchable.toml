@@ -1,0 +1,15 @@
+[ai]
+required = true
+description = "用于公式 A/B/C 上传比赛截图后识别球队名称。"
+
+[[secret]]
+name = "FORMULA_E_ODDS_USERNAME"
+description = "3573217 云端抓取登录账号"
+required = true
+expose = true
+
+[[secret]]
+name = "FORMULA_E_ODDS_PASSWORD"
+description = "3573217 云端抓取登录密码"
+required = true
+expose = true
