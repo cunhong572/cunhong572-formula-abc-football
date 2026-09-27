@@ -1,3 +1,5 @@
+import { sameTeam as teamMatch } from "lib/shared-data/team-resolver.js";
+import { fetchPreMatchContext, refreshAfterFinishedMatch } from "lib/shared-data/match-context-provider.js";
 import { matchMinute, inRecentWindow } from "lib/formula-c-live-evidence.js";
 import {requireAuth} from "lib/auth.js";
 import {evaluateLiveIntent,computeGTI,FORMULA_D_INTENTS} from "lib/formula-d-engine.js";
@@ -9,8 +11,6 @@ export const access="public";
 export const methods=["POST"];
 
 const BASE="https://www.fotmob.com/api/data";
-const SELF="https://formula-a-football.hatchable.site";
-const preMatchCache=new Map();
 const rosterTouchCache=new Map();
 const liveResultCache=new Map();
 async function getJson(path){
@@ -18,48 +18,8 @@ async function getJson(path){
   if(!r.ok)throw new Error("Live provider HTTP "+r.status);
   return await r.json();
 }
-async function getPreMatchContext(req,home,away){
-  const key=norm(home)+"|"+norm(away);
-  const hit=preMatchCache.get(key);
-  if(hit&&Date.now()-hit.ts<10*60*1000)return hit.value;
-  try{
-    const h=req?.headers||{};
-    const cookie=h.cookie||h.Cookie||"";
-    const authorization=(typeof h.get==="function"?h.get("authorization"):h.authorization)||"";
-    const r=await trackedFetch(SELF+"/api/formula-c",{
-      method:"POST",
-      timeout_ms:12000,
-      headers:{
-        "content-type":"application/json",
-        ...(cookie?{cookie}:{}),
-        ...(authorization?{authorization}:{})
-      },
-      body:JSON.stringify({home,away})
-    });
-    if(!r.ok){
-      preMatchCache.set(key,{ts:Date.now(),value:null});
-      return null;
-    }
-    const j=await r.json();
-    const value={
-      competition:j?.match?.competition||"",
-      homeIntent:j?.home?.intent||"",
-      awayIntent:j?.away?.intent||"",
-      homeTier:j?.home?.tier??null,
-      awayTier:j?.away?.tier??null,
-      homeRank:j?.home?.rank??null,
-      awayRank:j?.away?.rank??null,
-      source:"Formula C"
-    };
-    preMatchCache.set(key,{ts:Date.now(),value});
-    return value;
-  }catch(e){return null;}
-}
+async function getPreMatchContext(req,home,away){return fetchPreMatchContext(req,home,away);}
 function norm(s){return String(s||"").toLowerCase().normalize("NFKD").replace(/[^a-z0-9]/g,"")}
-function teamMatch(a,b){
-  const x=norm(a),y=norm(b);
-  return x===y||x.includes(y)||y.includes(x);
-}
 function localDateParts(offsetDays=0){
   const now=new Date(Date.now()+offsetDays*86400000);
   const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(now);
@@ -455,6 +415,7 @@ export default async function(req,res){
     const stats=statPairs(detail);
     const homeId=detail?.general?.homeTeam?.id??m?.home?.id;
     const awayId=detail?.general?.awayTeam?.id??m?.away?.id;
+    if(finished)refreshAfterFinishedMatch([homeId,awayId],detail?.general?.leagueId??detail?.general?.parentLeagueId);
     const homeName=detail?.general?.homeTeam?.name||m?.home?.name||home;
     const awayName=detail?.general?.awayTeam?.name||m?.away?.name||away;
     const shots=shotData(detail,homeId,awayId,minute);

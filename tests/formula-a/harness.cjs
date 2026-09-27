@@ -12,7 +12,7 @@ function api(file, names, bindings = {}) {
     const entries = m[1].split(',').map(s => s.trim());
     const needed = entries.filter(n => !Object.hasOwn(bindings, n));
     if (!needed.length) continue;
-    if (!m[2].startsWith('lib/formula-a/')) throw new Error('Unmocked import: ' + m[2]);
+    if (!m[2].startsWith('lib/formula-a/') && !m[2].startsWith('lib/shared-data/')) throw new Error('Unmocked import: ' + m[2]);
     Object.assign(imports, api(m[2], needed, bindings));
   }
   const source = text.replace(/^import[^\n]+\r?\n/gm, '').replace(/export default async function\(/, 'async function handler(').replace(/^export /gm, '');

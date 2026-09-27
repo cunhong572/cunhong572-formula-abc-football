@@ -1,5 +1,11 @@
+import { normTeam, sameTeamCategory } from "lib/shared-data/team-resolver.js";
+import { buildMatchContext } from "lib/shared-data/match-context-provider.js";
+import { allFixtures, fetchTeamData } from "lib/shared-data/schedule-provider.js";
+import { selectCurrentFixture } from "lib/shared-data/fixture-normalizer.js";
+import { fixtureRow } from "lib/shared-data/fixture-normalizer.js";
+import { getTeamStandings } from "lib/shared-data/standings-provider.js";
 import { scoreResult, competitionForm } from "lib/formula-a/form.js";
-import { dateInTimeZone, fixtureDate, knownCompetitionTimeZones } from "lib/formula-a/fatigue-days.js";
+import { dateInTimeZone, fixtureDate, knownCompetitionTimeZones } from "lib/shared-data/timezone.js";
 import { parseGoals, tableFromTeam, standingRows, avgFromTable } from "lib/formula-a/standings.js";
 import { classifyStyle } from "lib/formula-a/coach-style.js";
 import {requireAuth} from "lib/auth.js";
@@ -8,117 +14,16 @@ import { trackedFetch } from "lib/tracked-fetch.js";
 export const access = "public";
 export const methods = ["POST"];
 
-const BASE="https://www.fotmob.com/api/data";
 const SPORTSDB="https://www.thesportsdb.com/api/v1/json/3";
 
-async function getJson(path){
-  const r=await trackedFetch(BASE+path,{timeout_ms:12000,headers:{"user-agent":"Mozilla/5.0","accept":"application/json"}});
-  if(!r.ok) throw new Error("FotMob HTTP "+r.status);
-  return await r.json();
-}
+
 async function getExternalJson(url){
   const r=await trackedFetch(url,{timeout_ms:8000,headers:{"user-agent":"Mozilla/5.0","accept":"application/json"}});
   if(!r.ok) throw new Error("External team lookup HTTP "+r.status);
   return await r.json();
 }
-function norm(s){
-  return String(s||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
-}
+function norm(s){return normTeam(s);}
 
-const TEAM_ALIASES={
-  "atlmadrid":"Atletico Madrid","atleticomadrid":"Atletico Madrid","athleticomadrid":"Atletico Madrid",
-  "realmadridcf":"Real Madrid","realmadrid":"Real Madrid","barca":"Barcelona","fcbarcelona":"Barcelona",
-  "manutd":"Manchester United","manunited":"Manchester United","manchesterutd":"Manchester United",
-  "mancity":"Manchester City","manchestercityfc":"Manchester City",
-  "spurs":"Tottenham Hotspur","tottenham":"Tottenham Hotspur","tottenhamhotspur":"Tottenham Hotspur",
-  "newcastle":"Newcastle United","newcastleutd":"Newcastle United",
-  "westham":"West Ham United","westhamutd":"West Ham United",
-  "wolves":"Wolverhampton Wanderers","wolverhampton":"Wolverhampton Wanderers",
-  "nottmforest":"Nottingham Forest","nottingham":"Nottingham Forest",
-  "psg":"Paris Saint-Germain","parissg":"Paris Saint-Germain","parissaintgermain":"Paris Saint-Germain",
-  "om":"Marseille","ol":"Lyon","lyon":"Olympique Lyonnais","marseille":"Olympique Marseille",
-  "bayern":"Bayern Munich","bayernmunchen":"Bayern Munich","bayernmunich":"Bayern Munich",
-  "dortmund":"Borussia Dortmund","bvb":"Borussia Dortmund",
-  "leverkusen":"Bayer Leverkusen","bayer04":"Bayer Leverkusen","bayer04leverkusen":"Bayer Leverkusen",
-  "gladbach":"Borussia Mönchengladbach","monchengladbach":"Borussia Mönchengladbach",
-  "koln":"FC Köln","cologne":"FC Köln","fckoln":"FC Köln",
-  "inter":"Inter","intermilan":"Inter","internazionale":"Inter",
-  "acmilan":"AC Milan","milan":"AC Milan","juve":"Juventus",
-  "roma":"Roma","asroma":"Roma","napoli":"Napoli",
-  "sporting":"Sporting CP","sportinglisbon":"Sporting CP",
-  "benfica":"Benfica","fcporto":"Porto","porto":"Porto",
-  "psv":"PSV Eindhoven","psveindhoven":"PSV Eindhoven",
-  "shakhtar":"Shakhtar Donetsk","shakhtardonetsk":"Shakhtar Donetsk",
-  "fener":"Fenerbahce","fenerbahce":"Fenerbahce","galatasaray":"Galatasaray",
-  "slaviaprague":"Slavia Prague","slaviapraha":"Slavia Prague",
-  "bodoglimt":"Bodø/Glimt","bodoglimt":"Bodø/Glimt"
-};
-function canonicalTeamInput(name){
-  const key=norm(name);
-  return TEAM_ALIASES[key]||String(name||"").trim();
-}
-function isSeniorTeamSuggestion(x){
-  const s=String(x?.name||"");
-  return x?.type==="team"&&!/\b(?:women|ladies|u\s?[-]?\s?(?:17|18|19|20|21|23)|reserves?|academy|youth)\b/i.test(s);
-}
-function teamSearch(list,name){
-  const n=norm(name);
-  const suggestions=(Array.isArray(list)?list:[]).flatMap(x=>x.suggestions||[]).filter(isSeniorTeamSuggestion);
-  const exact=suggestions.find(x=>norm(x.name)===n);
-  if(exact)return exact;
-  const contains=suggestions.find(x=>{
-    const xn=norm(x.name);
-    return n.length>=5&&(xn.includes(n)||n.includes(xn));
-  });
-  return contains||null;
-}
-async function fotmobResolve(name){
-  const canonical=canonicalTeamInput(name);
-  const queries=[canonical];
-  if(norm(canonical)!==norm(name))queries.push(name);
-  for(const q of queries){
-    try{
-      const data=await getJson("/search/suggest?hits=20&lang=en&term="+encodeURIComponent(q));
-      const hit=teamSearch(data,q)||teamSearch(data,canonical);
-      if(hit?.id)return {hit,canonical,source:norm(canonical)===norm(name)?"FotMob":"Alias + FotMob"};
-    }catch(e){}
-  }
-  return null;
-}
-async function sportsDbFallback(name){
-  try{
-    const canonical=canonicalTeamInput(name);
-    const d=await getExternalJson(SPORTSDB+"/searchteams.php?t="+encodeURIComponent(canonical));
-    const teams=Array.isArray(d?.teams)?d.teams:[];
-    const senior=teams.find(t=>!/Women|Ladies|U\d+|Youth|Reserve/i.test(String(t?.strTeam||"")))||teams[0];
-    const candidate=senior?.strTeam||senior?.strTeamAlternate?.split(",")?.[0]?.trim();
-    if(!candidate)return null;
-    const data=await getJson("/search/suggest?hits=20&lang=en&term="+encodeURIComponent(candidate));
-    const hit=teamSearch(data,candidate);
-    return hit?.id?{hit,canonical:candidate,source:"TheSportsDB + FotMob"}:null;
-  }catch(e){return null;}
-}
-async function resolveTeam(name){
-  return await fotmobResolve(name)||await sportsDbFallback(name);
-}
-function fixtureRow(f,teamId,competitionTimeZones){
-  const h=f?.home?.name||"", a=f?.away?.name||"";
-  const done=!!f?.status?.finished && !f?.status?.cancelled;
-  const score=done && f?.status?.scoreStr ? f.status.scoreStr.replace(/\s+/g,"") : "";
-  return {
-    date:fixtureDate(f,competitionTimeZones),
-    competition:f?.tournament?.name||"",
-    opponent:Number(f?.home?.id)===Number(teamId)?a:h,
-    ha:Number(f?.home?.id)===Number(teamId)?"H":"A",
-    result:done?scoreResult(f,teamId):"",
-    fixtureId:f?.id||null,
-    status:done?"FT":"NS",
-    display:done&&score?(h+" "+score+" "+a):(h+"-"+a)
-  };
-}
-function allFixtures(t){
-  return t?.fixtures?.allFixtures?.fixtures||[];
-}
 function eventTimestamp(e){
   const raw=e?.strTimestamp||((e?.dateEvent||"")+(e?.strTime?("T"+e.strTime):"T12:00:00Z"));
   const ts=new Date(raw).getTime();
@@ -127,7 +32,7 @@ function eventTimestamp(e){
 async function supplementalFutureRows(teamName,matchTs){
   try{
     const search=await getExternalJson(SPORTSDB+"/searchteams.php?t="+encodeURIComponent(teamName));
-    const teams=Array.isArray(search?.teams)?search.teams:[];
+    const teams=(Array.isArray(search?.teams)?search.teams:[]).filter(t=>sameTeamCategory(t?.strTeam,teamName));
     const target=teams.find(t=>norm(t?.strTeam)===norm(teamName))||
       teams.find(t=>norm(t?.strTeam).includes(norm(teamName))||norm(teamName).includes(norm(t?.strTeam)))||
       teams.find(t=>!/Women|Ladies|U\d+|Youth|Reserve/i.test(String(t?.strTeam||"")));
@@ -192,19 +97,13 @@ export default async function(req,res){
     }
 
     const [hTeam,aTeam]=await Promise.all([
-      getJson("/teams?id="+encodeURIComponent(hHit.id)+"&ccode3=USA"),
-      getJson("/teams?id="+encodeURIComponent(aHit.id)+"&ccode3=USA")
+      fetchTeamData(hHit.id),
+      fetchTeamData(aHit.id)
     ]);
 
     const hid=Number(hHit.id),aid=Number(aHit.id);
     const now=Date.now()-6*3600*1000;
-    const candidates=allFixtures(hTeam).filter(f=>{
-      const ids=[Number(f?.home?.id),Number(f?.away?.id)];
-      const ts=new Date(f?.status?.utcTime||0).getTime();
-      return ids.includes(hid)&&ids.includes(aid)&&ts>=now&&!f?.status?.cancelled;
-    }).sort((x,y)=>new Date(x.status.utcTime)-new Date(y.status.utcTime));
-    let current=(resolved?.fixture&&!resolved.fixture?.status?.cancelled&&new Date(resolved.fixture?.status?.utcTime||0).getTime()>=now?resolved.fixture:null)||
-      candidates.find(f=>Number(f?.home?.id)===hid&&Number(f?.away?.id)===aid)||candidates[0]||null;
+    const current=selectCurrentFixture(allFixtures(hTeam),resolved?.fixture,hid,aid,now);
     if(!current)return res.status(404).json({error:"No upcoming scheduled match between these two teams was found."});
 
     const actualHomeId=Number(current.home.id),actualAwayId=Number(current.away.id);
@@ -212,12 +111,11 @@ export default async function(req,res){
     const awayObj=actualAwayId===aid?aTeam:hTeam;
     const matchTs=new Date(current.status.utcTime).getTime();
     const currentLeagueId=Number(current?.tournament?.leagueId||0);
-    const competitionTimeZones=knownCompetitionTimeZones([...allFixtures(hTeam),...allFixtures(aTeam),current]);
+    const sharedContext=buildMatchContext({fixture:current,homeTeam:homeObj,awayTeam:awayObj,fields:[]});
+    const competitionTimeZones=sharedContext.competitionTimeZones;
 
     async function side(teamObj,teamId,teamName){
-      const fixtures=allFixtures(teamObj).filter(f=>!f?.status?.cancelled).sort((x,y)=>new Date(x.status.utcTime)-new Date(y.status.utcTime));
-      const past=fixtures.filter(f=>new Date(f.status.utcTime).getTime()<matchTs&&f.status.finished);
-      const future=fixtures.filter(f=>new Date(f.status.utcTime).getTime()>matchTs&&!f.status.finished);
+      const {past,future}=Number(teamId)===actualHomeId?sharedContext.schedule.home:sharedContext.schedule.away;
       const recent4=past.slice(-4);
       const previous=recent4.slice(-3).map(f=>fixtureRow(f,teamId,competitionTimeZones));
       const fotmobFuture=future.map(f=>({...fixtureRow(f,teamId,competitionTimeZones),utcTime:f?.status?.utcTime||"",source:"FotMob"}));
@@ -225,7 +123,7 @@ export default async function(req,res){
       const mergedFuture=dedupeFutureRows([...fotmobFuture,...supplemental]);
       const next=mergedFuture.slice(0,2);
       const form=competitionForm(past,currentLeagueId,teamId);
-      const table=tableFromTeam(teamObj,currentLeagueId);
+      const table=getTeamStandings(teamObj,currentLeagueId);
       const avg=avgFromTable(table,teamId);
       return {
         teamId,previous,next,previousGapBaseDate:recent4.length>3?fixtureDate(recent4[0],competitionTimeZones):"",
