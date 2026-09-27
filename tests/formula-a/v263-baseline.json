@@ -1,0 +1,381 @@
+{
+  "api": {
+    "source": "FotMob",
+    "recognition": {
+      "home": {
+        "input": "Team 5",
+        "matched": "Team 5",
+        "teamId": 5
+      },
+      "away": {
+        "input": "Team 6",
+        "matched": "Team 6",
+        "teamId": 6
+      },
+      "confidence": 0,
+      "method": "name-only"
+    },
+    "match": {
+      "fixtureId": 500,
+      "date": "2030-09-10",
+      "competition": "League",
+      "leagueId": 10,
+      "season": "2030",
+      "home": "Team 5",
+      "away": "Team 6",
+      "kickoff": "2030-09-10T18:00:00Z"
+    },
+    "home": {
+      "name": "Team 5",
+      "teamId": 5,
+      "previous": [
+        {
+          "date": "2030-09-06",
+          "competition": "League",
+          "opponent": "Team 80",
+          "ha": "H",
+          "result": "W",
+          "fixtureId": 505,
+          "status": "FT",
+          "display": "Team 5 2-1 Team 80"
+        },
+        {
+          "date": "2030-09-07",
+          "competition": "Friendly",
+          "opponent": "Team 80",
+          "ha": "H",
+          "result": "W",
+          "fixtureId": 506,
+          "status": "FT",
+          "display": "Team 5 2-1 Team 80"
+        },
+        {
+          "date": "2030-09-08",
+          "competition": "League",
+          "opponent": "Team 80",
+          "ha": "H",
+          "result": "W",
+          "fixtureId": 507,
+          "status": "FT",
+          "display": "Team 5 2-1 Team 80"
+        }
+      ],
+      "next": [
+        {
+          "date": "2030-09-11",
+          "competition": "Cup",
+          "opponent": "Team 80",
+          "ha": "H",
+          "result": "",
+          "fixtureId": 520,
+          "status": "NS",
+          "display": "Team 5-Team 80",
+          "utcTime": "2030-09-11T18:00:00Z",
+          "source": "FotMob"
+        },
+        {
+          "date": "2030-09-12",
+          "competition": "Friendly",
+          "opponent": "Team 80",
+          "ha": "H",
+          "result": "",
+          "fixtureId": 521,
+          "status": "NS",
+          "display": "Team 5-Team 80",
+          "utcTime": "2030-09-12T18:00:00Z",
+          "source": "FotMob"
+        }
+      ],
+      "previousGapBaseDate": "2030-09-05",
+      "ranking": [
+        {
+          "rank": 2,
+          "team": "Team 2",
+          "teamId": 2,
+          "focus": false,
+          "points": 29,
+          "gd": 3,
+          "played": 7,
+          "remaining": 11,
+          "maxPoints": 62,
+          "scoresStr": "10-7"
+        },
+        {
+          "rank": 3,
+          "team": "Team 3",
+          "teamId": 3,
+          "focus": false,
+          "points": 28,
+          "gd": 3,
+          "played": 7,
+          "remaining": 11,
+          "maxPoints": 61,
+          "scoresStr": "10-7"
+        },
+        {
+          "rank": 4,
+          "team": "Team 4",
+          "teamId": 4,
+          "focus": false,
+          "points": 27,
+          "gd": 3,
+          "played": 7,
+          "remaining": 11,
+          "maxPoints": 60,
+          "scoresStr": "10-7"
+        },
+        {
+          "rank": 5,
+          "team": "Team 5",
+          "teamId": 5,
+          "focus": true,
+          "points": 26,
+          "gd": 3,
+          "played": 7,
+          "remaining": 11,
+          "maxPoints": 59,
+          "scoresStr": "10-7"
+        },
+        {
+          "rank": 6,
+          "team": "Team 6",
+          "teamId": 6,
+          "focus": false,
+          "points": 25,
+          "gd": 3,
+          "played": 7,
+          "remaining": 11,
+          "maxPoints": 58,
+          "scoresStr": "10-7"
+        },
+        {
+          "rank": 7,
+          "team": "Team 7",
+          "teamId": 7,
+          "focus": false,
+          "points": 24,
+          "gd": 3,
+          "played": 7,
+          "remaining": 11,
+          "maxPoints": 57,
+          "scoresStr": "10-7"
+        },
+        {
+          "rank": 8,
+          "team": "Team 8",
+          "teamId": 8,
+          "focus": false,
+          "points": 23,
+          "gd": 3,
+          "played": 7,
+          "remaining": 11,
+          "maxPoints": 56,
+          "scoresStr": "10-7"
+        }
+      ],
+      "averages": {
+        "gf": "1.43",
+        "ga": "1.00"
+      },
+      "form": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "W"
+      ],
+      "coachStyle": "微攻",
+      "scheduleSources": [
+        "FotMob"
+      ]
+    },
+    "away": {
+      "name": "Team 6",
+      "teamId": 6,
+      "previous": [
+        {
+          "date": "2030-09-06",
+          "competition": "League",
+          "opponent": "Team 80",
+          "ha": "H",
+          "result": "W",
+          "fixtureId": 605,
+          "status": "FT",
+          "display": "Team 6 2-1 Team 80"
+        },
+        {
+          "date": "2030-09-07",
+          "competition": "Friendly",
+          "opponent": "Team 80",
+          "ha": "H",
+          "result": "W",
+          "fixtureId": 606,
+          "status": "FT",
+          "display": "Team 6 2-1 Team 80"
+        },
+        {
+          "date": "2030-09-08",
+          "competition": "League",
+          "opponent": "Team 80",
+          "ha": "H",
+          "result": "W",
+          "fixtureId": 607,
+          "status": "FT",
+          "display": "Team 6 2-1 Team 80"
+        }
+      ],
+      "next": [
+        {
+          "date": "2030-09-11",
+          "competition": "Cup",
+          "opponent": "Team 80",
+          "ha": "H",
+          "result": "",
+          "fixtureId": 620,
+          "status": "NS",
+          "display": "Team 6-Team 80",
+          "utcTime": "2030-09-11T18:00:00Z",
+          "source": "FotMob"
+        },
+        {
+          "date": "2030-09-12",
+          "competition": "Friendly",
+          "opponent": "Team 80",
+          "ha": "H",
+          "result": "",
+          "fixtureId": 621,
+          "status": "NS",
+          "display": "Team 6-Team 80",
+          "utcTime": "2030-09-12T18:00:00Z",
+          "source": "FotMob"
+        }
+      ],
+      "previousGapBaseDate": "2030-09-05",
+      "ranking": [
+        {
+          "rank": 3,
+          "team": "Team 3",
+          "teamId": 3,
+          "focus": false,
+          "points": 28,
+          "gd": 3,
+          "played": 7,
+          "remaining": 11,
+          "maxPoints": 61,
+          "scoresStr": "10-7"
+        },
+        {
+          "rank": 4,
+          "team": "Team 4",
+          "teamId": 4,
+          "focus": false,
+          "points": 27,
+          "gd": 3,
+          "played": 7,
+          "remaining": 11,
+          "maxPoints": 60,
+          "scoresStr": "10-7"
+        },
+        {
+          "rank": 5,
+          "team": "Team 5",
+          "teamId": 5,
+          "focus": false,
+          "points": 26,
+          "gd": 3,
+          "played": 7,
+          "remaining": 11,
+          "maxPoints": 59,
+          "scoresStr": "10-7"
+        },
+        {
+          "rank": 6,
+          "team": "Team 6",
+          "teamId": 6,
+          "focus": true,
+          "points": 25,
+          "gd": 3,
+          "played": 7,
+          "remaining": 11,
+          "maxPoints": 58,
+          "scoresStr": "10-7"
+        },
+        {
+          "rank": 7,
+          "team": "Team 7",
+          "teamId": 7,
+          "focus": false,
+          "points": 24,
+          "gd": 3,
+          "played": 7,
+          "remaining": 11,
+          "maxPoints": 57,
+          "scoresStr": "10-7"
+        },
+        {
+          "rank": 8,
+          "team": "Team 8",
+          "teamId": 8,
+          "focus": false,
+          "points": 23,
+          "gd": 3,
+          "played": 7,
+          "remaining": 11,
+          "maxPoints": 56,
+          "scoresStr": "10-7"
+        },
+        {
+          "rank": 9,
+          "team": "Team 9",
+          "teamId": 9,
+          "focus": false,
+          "points": 22,
+          "gd": 3,
+          "played": 7,
+          "remaining": 11,
+          "maxPoints": 55,
+          "scoresStr": "10-7"
+        }
+      ],
+      "averages": {
+        "gf": "1.43",
+        "ga": "1.00"
+      },
+      "form": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "W"
+      ],
+      "coachStyle": "微攻",
+      "scheduleSources": [
+        "FotMob"
+      ]
+    },
+    "checks": {
+      "exactMatch": true,
+      "previous3Home": true,
+      "previous3Away": true,
+      "next2Home": true,
+      "next2Away": true,
+      "standingsHome": true,
+      "standingsAway": true,
+      "averagesHome": true,
+      "averagesAway": true
+    },
+    "complete": true,
+    "warnings": []
+  },
+  "zipEntries": {
+    "xl/workbook.xml": "6275565710c718b5d0ba69c73a795c31ffd72b1e6e0408c97873d98d73cc563d",
+    "xl/styles.xml": "d0decf2629ab7a5683690373573a6095318569a245bcdb198fbe002b2a719d58",
+    "xl/theme/theme1.xml": "b596c92daf5f74ea166cdf8b326d08cff21762a153c9a4e3f3c53a57ca93fead",
+    "xl/sharedStrings.xml": "d2e833b08a6b7a0eeba3098b5fd46a604e687aedf7d76f24daa63d5bb8d922be",
+    "xl/worksheets/sheet1.xml": "559f2c765f4dc3d3aa590603720fee00f48245708d1cde9059d3603ecc3bed9f",
+    "_rels/.rels": "aa0501a8085b01b1f66e317235caa86a273cfc7c657938e99eada70268e11213",
+    "xl/_rels/workbook.xml.rels": "255f013c224bc255c3497828c09c50a48f34d41c7153e0243d120ee128fe0d60",
+    "xl/worksheets/_rels/sheet1.xml.rels": "8d43ee1c6b84673595192ba62a559229aeae668eef9a62f1a8f3fd1cd23df132",
+    "[Content_Types].xml": "3075df9f387d734283477155c9d4b0d9512b92c7e13b8e93ee95d72f235e5326"
+  }
+}

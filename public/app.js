@@ -93,34 +93,9 @@ function scheduleData(side){
 function rankData(side){
   return [...$(side+"Ranks").querySelectorAll(".rank-row")].map(r=>({rank:r.children[0].value,team:r.children[1].value}));
 }
-function centeredRanking(rows){
-  const out=Array(7).fill(null);
-  const list=Array.isArray(rows)?rows:[];
-  const fi=list.findIndex(x=>x&&x.focus);
-  if(fi<0)return out;
-  const above=list.slice(0,fi).slice(-3);
-  const below=list.slice(fi+1,fi+4);
-  above.forEach((x,i)=>{out[3-above.length+i]=x;});
-  out[3]=list[fi];
-  below.forEach((x,i)=>{out[4+i]=x;});
-  return out;
-}
-function stateFromForm(arr){
-  if(!Array.isArray(arr)||!arr.length)return "—";
-  const pts=arr.reduce((s,r)=>s+(r==="W"?3:r==="D"?1:0),0);
-  const ppg=pts/arr.length;
-  if(arr.length>=5&&ppg>=2.7)return "很好";
-  if(ppg>=2)return "好";
-  if(ppg>=1)return "一般";
-  if(ppg>=0.4)return "差";
-  return "很差";
-}
-function daysBetween(a,b){
-  if(!a||!b)return "";
-  const da=new Date(a+"T12:00:00Z"), db=new Date(b+"T12:00:00Z");
-  const d=Math.round((db-da)/86400000)-1;
-  return d>=0?d:"";
-}
+function centeredRanking(rows){return FormulaA.centeredRanking(rows);}
+function stateFromForm(arr){return FormulaA.stateFromForm(arr);}
+function daysBetween(a,b){return FormulaA.daysBetween(a,b);}
 function exactSchedule(side){
   const data=lastAutoData?.[side]||{};
   const current=lastAutoData?.match||{};
@@ -368,6 +343,27 @@ async function exportExcel(){
     const ns="http://schemas.openxmlformats.org/spreadsheetml/2006/main";
     const sheetData=doc.getElementsByTagNameNS(ns,"sheetData")[0]||doc.querySelector("sheetData");
     if(!sheetData) throw new Error("原模板 sheetData 缺失");
+
+    // Print metadata only: preserve all cells, styles, dimensions and merges.
+    const worksheet=doc.getElementsByTagNameNS(ns,"worksheet")[0];
+    let sheetPr=doc.getElementsByTagNameNS(ns,"sheetPr")[0];
+    if(!sheetPr){
+      sheetPr=doc.createElementNS(ns,"sheetPr");
+      worksheet.insertBefore(sheetPr,worksheet.firstChild);
+    }
+    let pageSetUpPr=doc.getElementsByTagNameNS(ns,"pageSetUpPr")[0];
+    if(!pageSetUpPr){pageSetUpPr=doc.createElementNS(ns,"pageSetUpPr");sheetPr.appendChild(pageSetUpPr);}
+    pageSetUpPr.setAttribute("fitToPage","1");
+    let pageSetup=doc.getElementsByTagNameNS(ns,"pageSetup")[0];
+    if(!pageSetup){
+      pageSetup=doc.createElementNS(ns,"pageSetup");
+      const later=new Set(["headerFooter","rowBreaks","colBreaks","customProperties","cellWatches","ignoredErrors","smartTags","drawing","legacyDrawing","legacyDrawingHF","picture","oleObjects","controls","webPublishItems","tableParts","extLst"]);
+      worksheet.insertBefore(pageSetup,[...worksheet.children].find(x=>later.has(x.localName))||null);
+    }
+    pageSetup.setAttribute("fitToWidth","1");
+    pageSetup.setAttribute("fitToHeight","1");
+    // An absent orientation in this template uses Excel's portrait default.
+    if(!pageSetup.getAttribute("orientation"))pageSetup.setAttribute("orientation","portrait");
 
     function colNumToLetters(n){
       let s="";

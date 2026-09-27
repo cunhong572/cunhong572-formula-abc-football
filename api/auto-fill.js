@@ -1,3 +1,7 @@
+import { scoreResult, competitionForm } from "lib/formula-a/form.js";
+import { dateInTimeZone, fixtureDate, knownCompetitionTimeZones } from "lib/formula-a/fatigue-days.js";
+import { parseGoals, tableFromTeam, standingRows, avgFromTable } from "lib/formula-a/standings.js";
+import { classifyStyle } from "lib/formula-a/coach-style.js";
 import {requireAuth} from "lib/auth.js";
 import {resolveTeamPair} from "lib/team-resolver.js";
 import { trackedFetch } from "lib/tracked-fetch.js";
@@ -20,7 +24,6 @@ async function getExternalJson(url){
 function norm(s){
   return String(s||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
 }
-function isoDate(v){return String(v||"").slice(0,10)}
 
 const TEAM_ALIASES={
   "atlmadrid":"Atletico Madrid","atleticomadrid":"Atletico Madrid","athleticomadrid":"Atletico Madrid",
@@ -98,19 +101,12 @@ async function sportsDbFallback(name){
 async function resolveTeam(name){
   return await fotmobResolve(name)||await sportsDbFallback(name);
 }
-function scoreResult(f,teamId){
-  const hs=Number(f?.home?.score), as=Number(f?.away?.score);
-  if(!Number.isFinite(hs)||!Number.isFinite(as))return "";
-  const isHome=Number(f?.home?.id)===Number(teamId);
-  const gf=isHome?hs:as, ga=isHome?as:hs;
-  return gf>ga?"W":gf<ga?"L":"D";
-}
-function fixtureRow(f,teamId){
+function fixtureRow(f,teamId,competitionTimeZones){
   const h=f?.home?.name||"", a=f?.away?.name||"";
   const done=!!f?.status?.finished && !f?.status?.cancelled;
   const score=done && f?.status?.scoreStr ? f.status.scoreStr.replace(/\s+/g,"") : "";
   return {
-    date:isoDate(f?.status?.utcTime),
+    date:fixtureDate(f,competitionTimeZones),
     competition:f?.tournament?.name||"",
     opponent:Number(f?.home?.id)===Number(teamId)?a:h,
     ha:Number(f?.home?.id)===Number(teamId)?"H":"A",
@@ -119,21 +115,6 @@ function fixtureRow(f,teamId){
     status:done?"FT":"NS",
     display:done&&score?(h+" "+score+" "+a):(h+"-"+a)
   };
-}
-function parseGoals(scoresStr){
-  const m=String(scoresStr||"").match(/(\d+)\s*-\s*(\d+)/);
-  return m?{gf:Number(m[1]),ga:Number(m[2])}:{gf:0,ga:0};
-}
-function classifyStyle(gf,ga,played){
-  if(!played)return "";
-  const gfp=gf/played,gap=ga/played;
-  if(gfp>=1.85 || (gfp>=1.55&&gfp-gap>=0.55)) return "进攻";
-  if(gfp>=1.35 || (gfp-gap>=0.20&&gfp>=1.15)) return "微攻";
-  if(gap<=1.00&&gfp<1.35) return "防守";
-  return "微守";
-}
-function tableFromTeam(t){
-  return t?.table?.[0]?.data?.table?.all||[];
 }
 function allFixtures(t){
   return t?.fixtures?.allFixtures?.fixtures||[];
@@ -161,7 +142,7 @@ async function supplementalFutureRows(teamName,matchTs){
       const isAway=norm(away)===norm(teamName)||norm(away)===norm(target.strTeam);
       if(!isHome&&!isAway)return null;
       return {
-        date:isoDate(e?.dateEvent||new Date(ts).toISOString()),
+        date:dateInTimeZone(e?.strTimestamp||e?.dateEvent||new Date(ts).toISOString(),e?.timeZone||e?.timezone||e?.strTimezone),
         utcTime:new Date(ts).toISOString(),
         competition:e?.strLeague||e?.strLeagueAlternate||"Club Friendlies",
         opponent:isHome?away:home,
@@ -174,6 +155,7 @@ async function supplementalFutureRows(teamName,matchTs){
       };
     }).filter(Boolean);
   }catch(e){
+    if(e?.code?.startsWith("FIXTURE_"))throw e;
     return [];
   }
 }
@@ -192,28 +174,6 @@ function dedupeFutureRows(rows){
   }
   return out;
 }
-function standingRows(table,teamId){
-  const total=table.length>1?2*(table.length-1):null;
-  const rows=table.map(x=>{
-    const played=Number(x.played||0),pts=Number(x.pts||0);
-    const remaining=total==null?"":Math.max(0,total-played);
-    return {
-      rank:Number(x.idx||0),team:x.name||"",teamId:Number(x.id),focus:Number(x.id)===Number(teamId),
-      points:pts,gd:Number(x.goalConDiff||0),played,remaining,maxPoints:remaining===""?"":pts+remaining*3,
-      scoresStr:x.scoresStr||""
-    };
-  });
-  const idx=rows.findIndex(x=>x.focus);
-  if(idx<0)return [];
-  return rows.slice(Math.max(0,idx-3),Math.min(rows.length,idx+4));
-}
-function avgFromTable(table,teamId){
-  const x=table.find(r=>Number(r.id)===Number(teamId));
-  if(!x||!x.played)return {gf:"",ga:"",raw:null};
-  const g=parseGoals(x.scoresStr);
-  return {gf:(g.gf/Number(x.played)).toFixed(2),ga:(g.ga/Number(x.played)).toFixed(2),raw:{...g,played:Number(x.played)}};
-}
-
 export default async function(req,res){
   const user=await requireAuth(req,res);if(!user)return;
   try{
@@ -252,22 +212,23 @@ export default async function(req,res){
     const awayObj=actualAwayId===aid?aTeam:hTeam;
     const matchTs=new Date(current.status.utcTime).getTime();
     const currentLeagueId=Number(current?.tournament?.leagueId||0);
+    const competitionTimeZones=knownCompetitionTimeZones([...allFixtures(hTeam),...allFixtures(aTeam),current]);
 
     async function side(teamObj,teamId,teamName){
       const fixtures=allFixtures(teamObj).filter(f=>!f?.status?.cancelled).sort((x,y)=>new Date(x.status.utcTime)-new Date(y.status.utcTime));
       const past=fixtures.filter(f=>new Date(f.status.utcTime).getTime()<matchTs&&f.status.finished);
       const future=fixtures.filter(f=>new Date(f.status.utcTime).getTime()>matchTs&&!f.status.finished);
       const recent4=past.slice(-4);
-      const previous=recent4.slice(-3).map(f=>fixtureRow(f,teamId));
-      const fotmobFuture=future.map(f=>({...fixtureRow(f,teamId),utcTime:f?.status?.utcTime||"",source:"FotMob"}));
+      const previous=recent4.slice(-3).map(f=>fixtureRow(f,teamId,competitionTimeZones));
+      const fotmobFuture=future.map(f=>({...fixtureRow(f,teamId,competitionTimeZones),utcTime:f?.status?.utcTime||"",source:"FotMob"}));
       const supplemental=await supplementalFutureRows(teamName,matchTs);
       const mergedFuture=dedupeFutureRows([...fotmobFuture,...supplemental]);
       const next=mergedFuture.slice(0,2);
-      const form=past.filter(f=>Number(f?.tournament?.leagueId||0)===currentLeagueId).slice(-5).map(f=>scoreResult(f,teamId)).filter(Boolean);
-      const table=tableFromTeam(teamObj);
+      const form=competitionForm(past,currentLeagueId,teamId);
+      const table=tableFromTeam(teamObj,currentLeagueId);
       const avg=avgFromTable(table,teamId);
       return {
-        teamId,previous,next,previousGapBaseDate:recent4.length>3?isoDate(recent4[0].status.utcTime):"",
+        teamId,previous,next,previousGapBaseDate:recent4.length>3?fixtureDate(recent4[0],competitionTimeZones):"",
         ranking:standingRows(table,teamId),
         averages:{gf:avg.gf,ga:avg.ga},
         form,
@@ -302,7 +263,7 @@ export default async function(req,res){
       },
       match:{
         fixtureId:current.id,
-        date:isoDate(current.status.utcTime),
+        date:fixtureDate(current,competitionTimeZones),
         competition:current?.tournament?.name||"",
         leagueId:currentLeagueId,
         season:homeObj?.details?.latestSeason||"",
@@ -320,6 +281,8 @@ export default async function(req,res){
       ].filter(Boolean)
     });
   }catch(err){
+    if(err?.code?.startsWith("FIXTURE_")||err?.code?.startsWith("STANDINGS_"))
+      return res.status(422).json({error:err.message,code:err.code});
     console.error("formula-a FotMob lookup failed",String(err?.stack||err));
     res.status(502).json({error:"Automatic football data lookup failed.",detail:String(err?.message||err)});
   }
