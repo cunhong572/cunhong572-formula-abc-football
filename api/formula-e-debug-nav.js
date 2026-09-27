@@ -1,3 +1,4 @@
+import { withWorkerLease } from "lib/formula-d-worker/lease.js";
 import { browser } from "hatchable";
 
 const SOURCE="https://www.3573217.com/";
@@ -20,7 +21,8 @@ export const access="scheduler";
 export const methods=["POST"];
 export default async function(req,res){
   const {username,password}=creds();
-  const result=await browser.session(async page=>{
+  const result=await withWorkerLease({reason:"debug-nav",resume:false},async checkpoint=>browser.session(async page=>{
+    await checkpoint();
     await page.setViewport({width:1440,height:1100});
     await login(page,username,password);
     const before=await page.evaluate(()=>{
@@ -35,15 +37,17 @@ export default async function(req,res){
       }
       return {frames:docs.map(x=>x.href),entries};
     });
+    await checkpoint();
     const clicked=await page.evaluate(()=>{
       const docs=[];const visit=win=>{let doc;try{doc=win.document;}catch(_){return;}if(!doc||docs.includes(doc))return;docs.push(doc);for(const f of [...doc.querySelectorAll("iframe,frame")]){try{if(f.contentWindow)visit(f.contentWindow);}catch(_){}}};visit(window);
       for(const doc of docs){for(const el of [...doc.querySelectorAll("a,button,li,span,td")]){const t=String(el.innerText||el.textContent||"").replace(/\s+/g," ").trim().toLowerCase();if(t==="my favorites"||t==="my favourites"){try{el.click();return t;}catch(_){}}}}return "";
     });
     await new Promise(r=>setTimeout(r,1800));
+    await checkpoint();
     const after=await page.evaluate(()=>{
       const out=[];const visit=win=>{let doc;try{doc=win.document;}catch(_){return;}const href=String(win.location.href||"");const body=String(doc.body?.innerText||"").replace(/\s+/g," ").slice(0,500);out.push({href,body});for(const f of [...doc.querySelectorAll("iframe,frame")]){try{if(f.contentWindow)visit(f.contentWindow);}catch(_){}}};visit(window);return out;
     });
     return {before,clicked,after};
-  });
+  }));
   return res.json(result);
 }

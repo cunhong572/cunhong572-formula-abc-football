@@ -3,19 +3,21 @@ import { critical, queueRetry, queueRolloverMinute } from "lib/formula-d-odds/re
 export const access = "scheduler";
 export const methods = ["POST"];
 
-async function run(kind,matchId,targetAt){
-  return await cloudScan({reason:kind,matchId,targetAt});
+async function run(kind,matchId,targetAt,retryAttempt){
+  return await cloudScan({reason:kind,matchId,targetAt,retryAttempt});
 }
 export default async function(req,res){
   const kind=String(req.body?.kind||"one-shot");
   const matchId=req.body?.matchId||null;
-  const targetAt=req.body?.targetAt||null;
+  let targetAt=req.body?.targetAt||null;
   const retryAttempt=Number(req.body?.retryAttempt||0);
   const continuousRetry=req.body?.continuousRetry===true;
   let firstError=null;
 
   try{
-    const first=await run(kind,matchId,targetAt);
+    const first=await run(kind,matchId,targetAt,retryAttempt);
+    targetAt=first?.targetAt||targetAt;
+    if(first?.pausedForPriority)return res.status(202).json(first);
     const firstFound=Number(first?.found||0);
     const firstExpected=Number(first?.expected??firstFound);
     const rolloverPending=(first?.pendingRolloverIds||[]).map(Number).filter(Number.isFinite);

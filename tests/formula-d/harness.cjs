@@ -6,6 +6,13 @@ const root = path.resolve(__dirname, '../..');
 // Execute the actual checked-in module in a fresh isolated context. Only import
 // wiring/export syntax changes in memory; production files are never rewritten.
 function load(relative, names, bindings = {}) {
+  // The original odds suite isolates external coordination/navigation just as
+  // it isolates browser.session and db. Worker tests exercise the real adapters.
+  bindings = {
+    withWorkerLease: async (options, run) => run(async () => {}),
+    switchAndWait: async (page, open) => Boolean(await open()),
+    ...bindings,
+  };
   const source = fs.readFileSync(path.join(root, relative), 'utf8');
   const imports = {};
   for (const match of source.matchAll(/^import \{([^}]+)\} from ["']([^"']+)["'];/gm)) {
