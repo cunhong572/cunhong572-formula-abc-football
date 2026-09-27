@@ -1,3 +1,4 @@
+import { matchMinute, inRecentWindow } from "lib/formula-c-live-evidence.js";
 import {requireAuth} from "lib/auth.js";
 import {evaluateLiveIntent,computeGTI,FORMULA_D_INTENTS} from "lib/formula-d-engine.js";
 import {saveFormulaDSnapshot} from "lib/formula-d-learning.js";
@@ -86,8 +87,8 @@ function parseMinute(detail,m){
     m?.status?.liveTime?.long
   ];
   for(const v of candidates){
-    const mm=String(v||"").match(/(\d{1,3})/);
-    if(mm)return Math.min(130,Number(mm[1]));
+    const mm=matchMinute(v);
+    if(mm!==null)return Math.min(130,mm);
   }
   const start=detail?.general?.matchTimeUTC||m?.status?.utcTime;
   if(start){
@@ -120,6 +121,7 @@ function val(stats,names,idx){
   return null;
 }
 function shotData(detail,homeId,awayId,minute){
+  minute=matchMinute(minute)??0;
   const shots=detail?.content?.shotmap?.shots||[];
   const recent5Start=Math.max(0,minute-5);
   const prev5Start=Math.max(0,minute-10);
@@ -129,14 +131,16 @@ function shotData(detail,homeId,awayId,minute){
     const teamShots=(Array.isArray(shots)?shots:[]).filter(s=>Number(s?.teamId)===Number(id));
     const withMinute=teamShots.map(s=>({
       ...s,
-      _m:Number(s?.min??s?.minute??String(s?.timeStr||"").match(/\d+/)?.[0])
+      _m:matchMinute(s?.min??s?.minute??s?.timeStr)
     })).filter(s=>Number.isFinite(s._m));
-    const recent5=withMinute.filter(s=>s._m>=recent5Start&&s._m<=minute+1);
+    const recent5=withMinute.filter(s=>s._m>=recent5Start&&s._m<=minute);
     const previous5=withMinute.filter(s=>s._m>=prev5Start&&s._m<recent5Start);
-    const recent10=withMinute.filter(s=>s._m>=recent10Start&&s._m<=minute+1);
+    const recent10=withMinute.filter(s=>s._m>=recent10Start&&s._m<=minute);
     const previous10=withMinute.filter(s=>s._m>=prev10Start&&s._m<recent10Start);
     return {
-      totalXg:teamShots.reduce((z,s)=>z+num(s?.expectedGoals),0),
+      observed:Array.isArray(detail?.content?.shotmap?.shots),
+      minute,
+      totalXg:withMinute.filter(s=>s._m<=minute).reduce((z,s)=>z+num(s?.expectedGoals),0),
       recent5Shots:recent5.length,
       recent5Xg:recent5.reduce((z,s)=>z+num(s?.expectedGoals),0),
       previous5Shots:previous5.length,
@@ -175,9 +179,7 @@ function playerName(p){
 function playerKey(p){
   return String(p?.id||p?.playerId||p?.player?.id||playerName(p));
 }
-function parseSubMinute(v){
-  const m=Number(String(v??"").match(/\d+/)?.[0]);
-  return Number.isFinite(m)?m:null;
+function parseSubMinute(v){return matchMinute(v);
 }
 function classifySub(on,off){
   const og=on?.positionGroup||"Unknown", fg=off?.positionGroup||"Unknown";
@@ -268,14 +270,15 @@ function lineupSubs(detail,teamIndex,teamId){
   }
   return paired;
 }
-function eventCounts(detail,teamId,teamIndex){
+function eventCounts(detail,teamId,teamIndex,minute=null){
+  minute=matchMinute(minute);
   const ev=eventArray(detail).filter(e=>{
     if(Number(e?.teamId)===Number(teamId))return true;
     if(typeof e?.isHome==="boolean")return e.isHome===(teamIndex===0);
     if(typeof e?.isHomeTeam==="boolean")return e.isHomeTeam===(teamIndex===0);
     return false;
   });
-  let red=0;const subs=[];const seen=new Set();
+  let red=0,yellow=0;const cards=[],formations=[];const subs=[];const seen=new Set();
   const addSub=(s)=>{
     const key=[s.minute,s.on?.player||"",s.off?.player||"",s.type||""].join("|");
     if(seen.has(key))return;seen.add(key);subs.push(s);
@@ -283,7 +286,11 @@ function eventCounts(detail,teamId,teamIndex){
   for(const e of ev){
     const t=String(e?.type||e?.eventType||e?.event||"").toLowerCase();
     const card=String(e?.card||e?.cardType||"").toLowerCase();
-    if(t.includes("red")||card.includes("red"))red++;
+    const eventMinute=matchMinute(e?.time??e?.minute??e?.min);
+    if(minute!==null&&eventMinute!==null&&eventMinute>minute)continue;
+    if(t.includes("red")||card.includes("red")){red++;cards.push({minute:eventMinute,color:"red"});}
+    else if(t.includes("yellow")||card.includes("yellow")){yellow++;cards.push({minute:eventMinute,color:"yellow"});}
+    if(t.includes("formation")||t.includes("tactical"))formations.push({minute:eventMinute,from:e.from??e.oldFormation,to:e.to??e.newFormation,attackingPlayersBefore:e.attackingPlayersBefore,attackingPlayersAfter:e.attackingPlayersAfter});
     if(t.includes("sub")){
       const minute=parseSubMinute(e?.time??e?.minute??e?.min);
       const onRaw=e?.subOn||e?.playerIn||e?.onPlayer||e?.player?.subOn||null;
@@ -299,10 +306,12 @@ function eventCounts(detail,teamId,teamIndex){
       addSub({minute,on,off,type:classifySub(on,off)});
     }
   }
-  for(const s of lineupSubs(detail,teamIndex,teamId))addSub(s);
+  for(const s of lineupSubs(detail,teamIndex,teamId))if(minute===null||s.minute===null||s.minute<=minute)addSub(s);
   subs.sort((a,b)=>(a.minute??999)-(b.minute??999));
+  cards.sort((a,b)=>(a.minute??999)-(b.minute??999));
+  formations.sort((a,b)=>(a.minute??999)-(b.minute??999));
   return {
-    red,subs:subs.length,subEvents:subs,lastSub:subs.length?subs[subs.length-1]:null,
+    red,yellow,cardEvents:cards,formationChanges:formations,subs:subs.length,subEvents:subs,lastSub:subs.length?subs[subs.length-1]:null,
     attackingSubs:subs.filter(x=>x.type==="Attacking Sub").length,
     defensiveSubs:subs.filter(x=>x.type==="Defensive Sub").length
   };
@@ -367,7 +376,8 @@ function sideMetrics(stats,shots,events,idx){
     totalShots,shotsOnTarget,
     xg:xgStat??Number(shots.totalXg.toFixed(2)),
     possession,corners,boxTouches,
-    redCards:events.red,substitutions:events.subs,
+    minute:shots.minute,realtimeEvidenceAvailable:shots.observed,
+    redCards:events.red,yellowCards:events.yellow||0,cardEvents:events.cardEvents||[],formationChanges:events.formationChanges||[],substitutions:events.subs,
     substitutionEvents:events.subEvents||[],
     lastSubstitution:events.lastSub||null,
     recent5ShotsFor:shots.recent5Shots,
@@ -381,7 +391,7 @@ function sideMetrics(stats,shots,events,idx){
     recentBoxEntriesFor:0,
     attackingSubsFor:events.attackingSubs||0,
     defensiveSubsFor:events.defensiveSubs||0,
-    stillAttacking:shots.recent5Shots>=2||shots.recent5Xg>=0.16||shots.recent10Shots>=4||shots.recent10Xg>=0.28,
+    stillAttacking:shots.recent5Shots>=2||shots.recent5Xg>=0.16,
     rhythmSlowing:(shots.recent5Shots<=1&&shots.recent5Xg<=0.06&&
       (shots.previous5Shots>=2||shots.previous5Xg>=0.10)&&
       ((shots.previous5Shots>0&&shots.recent5Shots<=Math.floor(shots.previous5Shots/2))||
@@ -431,13 +441,13 @@ export default async function(req,res){
     const finished=!!(detail?.header?.status?.finished??m?.status?.finished);
     if(!started)return res.status(409).json({error:"Match found, but it has not started yet.",matchId:m.id});
     let [hg,ag]=scorePair(m,detail),minute=parseMinute(detail,m);
-    const boardMinute=Number(b.liveMinute);
+    const boardMinute=matchMinute(b.liveMinute);
     const boardHomeGoals=Number(b.liveHomeGoals);
     const boardAwayGoals=Number(b.liveAwayGoals);
     // The lightweight live board often receives minute/score changes before
     // matchDetails. Use the fresher board clock/score immediately so Formula C
     // does not wait for the slower detail feed just to recompute intent.
-    if(Number.isFinite(boardMinute) && boardMinute>minute)minute=Math.min(130,boardMinute);
+    if(boardMinute!==null && boardMinute>minute)minute=Math.min(130,boardMinute);
     if(Number.isFinite(boardHomeGoals) && Number.isFinite(boardAwayGoals) &&
        (boardHomeGoals!==hg || boardAwayGoals!==ag)){
       hg=boardHomeGoals; ag=boardAwayGoals;
@@ -448,7 +458,7 @@ export default async function(req,res){
     const homeName=detail?.general?.homeTeam?.name||m?.home?.name||home;
     const awayName=detail?.general?.awayTeam?.name||m?.away?.name||away;
     const shots=shotData(detail,homeId,awayId,minute);
-    let he=eventCounts(detail,homeId,0),ae=eventCounts(detail,awayId,1);
+    let he=eventCounts(detail,homeId,0,minute),ae=eventCounts(detail,awayId,1,minute);
     [he,ae]=await Promise.all([
       enrichEventsWithPlayers(he,homeId,homeName,detail,0),
       enrichEventsWithPlayers(ae,awayId,awayName,detail,1)
@@ -458,7 +468,7 @@ export default async function(req,res){
     const weights=weightState.config;
     const liveSignature=JSON.stringify({
       weights,
-      hg,ag,minute,
+      hg,ag,minute,homeEvidence:hm.realtimeEvidenceAvailable,awayEvidence:am.realtimeEvidenceAvailable,homeTactics:[hm.cardEvents,hm.formationChanges,hm.substitutionEvents],awayTactics:[am.cardEvents,am.formationChanges,am.substitutionEvents],
       h:[hm.totalShots,hm.shotsOnTarget,hm.xg,hm.possession,hm.corners,hm.redCards,hm.substitutions,hm.recent5ShotsFor,hm.recent5XgFor,hm.recent10ShotsFor,hm.recent10XgFor,hm.lastSubstitution?.minute,hm.lastSubstitution?.on?.player,hm.lastSubstitution?.off?.player],
       a:[am.totalShots,am.shotsOnTarget,am.xg,am.possession,am.corners,am.redCards,am.substitutions,am.recent5ShotsFor,am.recent5XgFor,am.recent10ShotsFor,am.recent10XgFor,am.lastSubstitution?.minute,am.lastSubstitution?.on?.player,am.lastSubstitution?.off?.player]
     });
@@ -483,7 +493,7 @@ export default async function(req,res){
     const hr=pre?.homeRank??b.homeRank,ar=pre?.awayRank??b.awayRank;
     const homeAnalysis=evaluateLiveIntent(hg,ag,minute,hr,ar,hm,weights);
     const awayAnalysis=evaluateLiveIntent(ag,hg,minute,ar,hr,am,weights);
-    const gti=computeGTI(homeAnalysis.metrics,awayAnalysis.metrics,{recent10TotalShots:(hm.recent10ShotsFor||0)+(am.recent10ShotsFor||0)},weights);
+    const gti=computeGTI(homeAnalysis.metrics,awayAnalysis.metrics,{recent5TotalShots:(hm.recent5ShotsFor||0)+(am.recent5ShotsFor||0)},weights);
     const matchPayload={matchId:m.id,competition:m._league||detail?.general?.leagueName||"",home:homeName,away:awayName,homeGoals:hg,awayGoals:ag,minute,started,finished,lastUpdated:new Date().toISOString()};
     try{
       await saveFormulaDSnapshot(matchPayload,{...homeAnalysis,metrics:hm,formulaDMetrics:homeAnalysis.metrics},{...awayAnalysis,metrics:am,formulaDMetrics:awayAnalysis.metrics},gti,{homeId,awayId});
@@ -495,8 +505,8 @@ export default async function(req,res){
       intents:FORMULA_D_INTENTS,
       gti,
       match:matchPayload,
-      home:{intent:homeAnalysis.intent,confidence:homeAnalysis.confidence,reasons:homeAnalysis.reasons,signals:homeAnalysis.signals,formulaDMetrics:homeAnalysis.metrics,metrics:hm},
-      away:{intent:awayAnalysis.intent,confidence:awayAnalysis.confidence,reasons:awayAnalysis.reasons,signals:awayAnalysis.signals,formulaDMetrics:awayAnalysis.metrics,metrics:am},
+      home:{intent:homeAnalysis.intent,realtimeEvidence:homeAnalysis.realtimeEvidence,confidence:homeAnalysis.confidence,reasons:homeAnalysis.reasons,signals:homeAnalysis.signals,formulaDMetrics:homeAnalysis.metrics,metrics:hm},
+      away:{intent:awayAnalysis.intent,realtimeEvidence:awayAnalysis.realtimeEvidence,confidence:awayAnalysis.confidence,reasons:awayAnalysis.reasons,signals:awayAnalysis.signals,formulaDMetrics:awayAnalysis.metrics,metrics:am},
       reusedUnchangedData:false,
       weightConfig:{config:weights,updatedAt:weightState.updatedAt,isDefault:weightState.isDefault}
     };
