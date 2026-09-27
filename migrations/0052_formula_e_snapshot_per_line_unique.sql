@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX IF NOT EXISTS uq_formula_e_snapshot_line_kind ON formula_e_odds_snapshots(match_id, selected_line, sample_kind)

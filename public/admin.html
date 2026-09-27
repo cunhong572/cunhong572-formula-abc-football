@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Football Analyzer · 管理员</title>
+<link rel="stylesheet" href="/style.css"/>
+</head>
+<body class="admin-page">
+<main class="admin-wrap">
+  <section class="panel admin-panel">
+    <div class="eyebrow">OWNER CONTROL</div>
+    <h1>网站登录管理</h1>
+    <p class="admin-muted">只用于管理共享账号、设备数量和密码。</p>
+    <div class="grid two">
+      <label>管理员账号<input id="adminUsername" autocomplete="username" placeholder="Admin username"></label>
+      <label>管理员密码<input id="adminPassword" type="password" autocomplete="current-password" placeholder="Admin password"></label>
+    </div>
+    <button id="adminLogin" class="primary">进入管理</button>
+    <div id="adminMsg" class="admin-msg"></div>
+  </section>
+
+  <section id="adminControls" class="panel admin-panel" hidden>
+    <h2>共享账号设置</h2>
+    <div class="grid two">
+      <label>共享账号<input id="sharedUsername"></label>
+      <label>同时登录设备数<input id="maxSessions" type="number" min="1" max="20"></label>
+    </div>
+    <label>新共享密码（不改可留空）<input id="newPassword" type="password" placeholder="至少10位"></label>
+    <div class="admin-status">
+      <span>当前在线设备：<strong id="activeSessions">0</strong></span>
+      <span>密码版本：<strong id="passwordVersion">1</strong></span>
+    </div>
+    <div class="module-actions">
+      <button id="saveAccess" class="primary">保存设置</button>
+      <button id="clearSessions">踢出全部设备</button>
+    </div>
+
+    <hr class="admin-rule">
+    <h2>公式A(资料) / 公式B(分析意图) / 公式C(分析实时意图) 配重调试</h2>
+    <p class="admin-muted">公式A(资料)继续按锁定硬规则执行，欧冠资料自动调用原欧冠专用引擎；公式B(分析意图)与公式C(分析实时意图)保留现有底层权重配置。显示名称已统一，底层数据键不改。</p>
+
+    <div class="weight-card readonly-weight">
+      <div class="weight-title"><strong>公式A(资料)</strong><span>无综合配重</span></div>
+      <p>普通赛事执行原公式A资料规则；欧冠自动调用原公式B欧冠资料规则。两套引擎独立，不做虚构加权。</p>
+    </div>
+
+    <div class="weight-card">
+      <div class="weight-title"><strong>公式B(分析意图) · 综合支持分</strong><span id="sum_C">100%</span></div>
+      <div class="weight-grid five">
+        <label>比赛需求 %<small>Competition Need：积分、晋级、拿分必要性</small><input class="c-weight" data-key="CompetitionNeed" type="number" min="0" max="100" step="1"></label>
+        <label>赢球能力 %<small>Win Ability：实力档位 + 主客场</small><input class="c-weight" data-key="WinAbility" type="number" min="0" max="100" step="1"></label>
+        <label>阵容伤停轮换 %<small>Lineup / Injury / Rotation</small><input class="c-weight" data-key="LineupInjuryRotation" type="number" min="0" max="100" step="1"></label>
+        <label>后续赛程 %<small>Future Schedule：后面比赛强弱与机会成本</small><input class="c-weight" data-key="FutureSchedule" type="number" min="0" max="100" step="1"></label>
+        <label>市场赔率 %<small>Market Odds：赔率与市场变化</small><input class="c-weight" data-key="MarketOdds" type="number" min="0" max="100" step="1"></label>
+        <label>近期状态 %<small>Current Form：最近比赛表现</small><input class="c-weight" data-key="CurrentForm" type="number" min="0" max="100" step="1"></label>
+        <label>教练意图 %<small>Coach Intent：赛前言论与用人倾向</small><input class="c-weight" data-key="CoachIntent" type="number" min="0" max="100" step="1"></label>
+        <label>主客场 %<small>Home / Away：主场或客场因素</small><input class="c-weight" data-key="HomeAway" type="number" min="0" max="100" step="1"></label>
+        <label>疲劳密度 %<small>Fatigue / Density：休息天数与赛程拥挤</small><input class="c-weight" data-key="FatigueDensity" type="number" min="0" max="100" step="1"></label>
+        <label>交手与打法 %<small>H2H / Style：历史交手与战术匹配</small><input class="c-weight" data-key="H2HStyle" type="number" min="0" max="100" step="1"></label>
+      </div>
+      <div class="module-actions">
+        <button id="saveCWeights" class="primary">保存公式B分析意图配重</button>
+        <button id="resetCWeights">恢复公式B默认值</button>
+      </div>
+      <div id="cWeightMsg" class="admin-msg"></div>
+    </div>
+
+    <hr class="admin-rule">
+    <h2>公式C(分析实时意图) · 指数配重</h2>
+    <p class="admin-muted">每组权重总和必须等于 100%。未修改时使用当前锁定默认值；保存后公式C实时意图分析立即使用新配重。</p>
+
+    <div class="weight-card">
+      <div class="weight-title"><strong>5分钟 / 10分钟窗口</strong><span id="sum_window">100%</span></div>
+      <div class="weight-grid">
+        <label>5分钟窗口 %<small>近期变化，反应更快</small><input class="d-weight" data-group="window" data-key="w5" type="number" min="0" max="100" step="1"></label>
+        <label>10分钟窗口 %<small>更稳定，减少短时波动</small><input class="d-weight" data-group="window" data-key="w10" type="number" min="0" max="100" step="1"></label>
+      </div>
+    </div>
+
+    <div class="weight-card">
+      <div class="weight-title"><strong>PT</strong><span id="sum_PT">100%</span></div>
+      <div class="weight-grid">
+        <label>RI — 传球节奏 %<small>单位时间成功传球输出</small><input class="d-weight" data-group="PT" data-key="ri" type="number" min="0" max="100" step="1"></label>
+        <label>PSL — 控球序列长度 %<small>一次本方控球持续时间，反向指标</small><input class="d-weight" data-group="PT" data-key="psl" type="number" min="0" max="100" step="1"></label>
+      </div>
+    </div>
+
+    <div class="weight-card">
+      <div class="weight-title"><strong>PI</strong><span id="sum_PI">100%</span></div>
+      <div class="weight-grid">
+        <label>DAR — 压迫动作频率 %<small>中前场防守/逼抢动作强度</small><input class="d-weight" data-group="PI" data-key="dar" type="number" min="0" max="100" step="1"></label>
+        <label>TG Rate — 夺回球权频率 %<small>单位时间成功抢回球权</small><input class="d-weight" data-group="PI" data-key="tg" type="number" min="0" max="100" step="1"></label>
+      </div>
+    </div>
+
+    <div class="weight-card">
+      <div class="weight-title"><strong>Speed Score (SS)</strong><span id="sum_SS">100%</span></div>
+      <div class="weight-grid five">
+        <label>RSI — 基础速度指数 %<small>综合持球/无球阶段的比赛速度</small><input class="d-weight" data-group="SS" data-key="rsi" type="number" min="0" max="100" step="1"></label>
+        <label>PT — 控球节奏 %<small>本队持球时的节奏与执行</small><input class="d-weight" data-group="SS" data-key="pt" type="number" min="0" max="100" step="1"></label>
+        <label>PI — 压迫指数 %<small>逼抢积极性与夺回球权效果</small><input class="d-weight" data-group="SS" data-key="pi" type="number" min="0" max="100" step="1"></label>
+        <label>TCT — 转换完成时间 %<small>夺回球权后完成向前转换的速度，反向指标</small><input class="d-weight" data-group="SS" data-key="tct" type="number" min="0" max="100" step="1"></label>
+        <label>IA — 即时进攻率 %<small>高位夺回球权后快速形成进攻</small><input class="d-weight" data-group="SS" data-key="ia" type="number" min="0" max="100" step="1"></label>
+      </div>
+    </div>
+
+    <div class="weight-card">
+      <div class="weight-title"><strong>Attack Score (AS)</strong><span id="sum_AS">100%</span></div>
+      <div class="weight-grid five">
+        <label>SCR — 射门创造率 %<small>单位时间形成射门的能力</small><input class="d-weight" data-group="AS" data-key="scr" type="number" min="0" max="100" step="1"></label>
+        <label>BPR — 向前推进率 %<small>把球推进到危险区域的效率</small><input class="d-weight" data-group="AS" data-key="bpr" type="number" min="0" max="100" step="1"></label>
+        <label>RI — 传球节奏 %<small>攻击组织中的传球执行质量</small><input class="d-weight" data-group="AS" data-key="ri" type="number" min="0" max="100" step="1"></label>
+        <label>TCR — 转换完成率 %<small>夺回球权后有效完成转换的比例</small><input class="d-weight" data-group="AS" data-key="tcr" type="number" min="0" max="100" step="1"></label>
+        <label>IA — 即时进攻率 %<small>压迫成功后立刻制造攻击的频率</small><input class="d-weight" data-group="AS" data-key="ia" type="number" min="0" max="100" step="1"></label>
+      </div>
+    </div>
+
+    <div class="weight-card">
+      <div class="weight-title"><strong>GTI</strong><span id="sum_GTI">100%</span></div>
+      <div class="weight-grid">
+        <label>TR — 比赛转换率 %<small>双方单位时间球权转换频率</small><input class="d-weight" data-group="GTI" data-key="tr" type="number" min="0" max="100" step="1"></label>
+        <label>CII — 对抗强度指数 %<small>双方单位时间防守动作与争抢强度</small><input class="d-weight" data-group="GTI" data-key="cii" type="number" min="0" max="100" step="1"></label>
+        <label>SS — 球队速度分 %<small>双方 Speed Score 的平均比赛速度</small><input class="d-weight" data-group="GTI" data-key="ss" type="number" min="0" max="100" step="1"></label>
+      </div>
+    </div>
+
+    <div class="module-actions">
+      <button id="saveDWeights" class="primary">保存公式C实时意图配重</button>
+      <button id="resetDWeights">恢复公式C默认值</button>
+    </div>
+    <div id="weightMsg" class="admin-msg"></div>
+
+    <hr class="admin-rule">
+    <h2>修改管理员密码</h2>
+    <label>新管理员密码<input id="newAdminPassword" type="password" placeholder="至少12位"></label>
+    <button id="changeAdminPassword">修改管理员密码</button>
+    <div id="adminActionMsg" class="admin-msg"></div>
+  </section>
+</main>
+<script src="/admin.js"></script>
+</body>
+</html>

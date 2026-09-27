@@ -1,0 +1,1 @@
+INSERT INTO formula_e_odds_snapshots(match_id,sample_kind,selected_line,odds,observed_at) SELECT id,'baseline',selected_line,current_odds,COALESCE(updated_at,now()) FROM formula_e_matches WHERE selected_line IS NOT NULL AND current_odds IS NOT NULL ON CONFLICT DO NOTHING

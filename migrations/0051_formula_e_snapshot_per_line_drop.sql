@@ -1,0 +1,1 @@
+DROP INDEX IF EXISTS uq_formula_e_snapshot_kind

@@ -1,0 +1,1478 @@
+{
+  "environment": {
+    "acceptanceProject": "proj_D4A8tb6OOmOD",
+    "productionProject": "proj_Lgog5Tsn1ZJE",
+    "productionVersion": 273,
+    "productionReadOnly": true,
+    "branch": "refactor/worker-scheduler"
+  },
+  "migrationVerification": {
+    "historyUnchanged": true,
+    "backfillErrors": [],
+    "duplicates": [],
+    "rows": [
+      {
+        "id": 552,
+        "match_id": 403,
+        "sample_kind": "baseline",
+        "selected_line": "1",
+        "odds": 1.79,
+        "observed_at": "2026-09-27T04:15:33.621673+00:00",
+        "created_at": "2026-09-27T04:15:33.621673+00:00",
+        "target_at": null,
+        "capture_status": null
+      },
+      {
+        "id": 553,
+        "match_id": 404,
+        "sample_kind": "baseline",
+        "selected_line": "1/1.5",
+        "odds": 2.04,
+        "observed_at": "2026-09-27T04:15:33.658678+00:00",
+        "created_at": "2026-09-27T04:15:33.658678+00:00",
+        "target_at": null,
+        "capture_status": null
+      },
+      {
+        "id": 554,
+        "match_id": 407,
+        "sample_kind": "baseline",
+        "selected_line": "1",
+        "odds": 1.79,
+        "observed_at": "2026-09-27T04:15:33.761441+00:00",
+        "created_at": "2026-09-27T04:15:33.761441+00:00",
+        "target_at": null,
+        "capture_status": null
+      },
+      {
+        "id": 561,
+        "match_id": 403,
+        "sample_kind": "t11h",
+        "selected_line": "1",
+        "odds": 1.79,
+        "observed_at": "2026-09-27T05:00:00+00:00",
+        "created_at": "2026-09-27T05:22:08.129289+00:00",
+        "target_at": "2026-09-27T05:00:00+00:00",
+        "capture_status": "captured_exact"
+      },
+      {
+        "id": 562,
+        "match_id": 404,
+        "sample_kind": "t11h",
+        "selected_line": "1/1.5",
+        "odds": 2.04,
+        "observed_at": "2026-09-27T05:00:00+00:00",
+        "created_at": "2026-09-27T05:22:08.146078+00:00",
+        "target_at": "2026-09-27T05:00:00+00:00",
+        "capture_status": "captured_exact"
+      },
+      {
+        "id": 563,
+        "match_id": 407,
+        "sample_kind": "t11h",
+        "selected_line": "1",
+        "odds": 1.79,
+        "observed_at": "2026-09-27T05:00:00+00:00",
+        "created_at": "2026-09-27T05:22:08.165749+00:00",
+        "target_at": "2026-09-27T05:00:00+00:00",
+        "capture_status": "captured_exact"
+      },
+      {
+        "id": 564,
+        "match_id": 403,
+        "sample_kind": "t10h",
+        "selected_line": "1",
+        "odds": 1.66,
+        "observed_at": "2026-09-27T06:04:24.349333+00:00",
+        "created_at": "2026-09-27T06:04:24.349333+00:00",
+        "target_at": "2026-09-27T06:00:00+00:00",
+        "capture_status": "captured_exact"
+      },
+      {
+        "id": 565,
+        "match_id": 404,
+        "sample_kind": "t10h",
+        "selected_line": "1/1.5",
+        "odds": 2,
+        "observed_at": "2026-09-27T06:04:24.403393+00:00",
+        "created_at": "2026-09-27T06:04:24.403393+00:00",
+        "target_at": "2026-09-27T06:00:00+00:00",
+        "capture_status": "captured_exact"
+      },
+      {
+        "id": 566,
+        "match_id": 407,
+        "sample_kind": "t10h",
+        "selected_line": "1",
+        "odds": 1.8,
+        "observed_at": "2026-09-27T06:04:24.433837+00:00",
+        "created_at": "2026-09-27T06:04:24.433837+00:00",
+        "target_at": "2026-09-27T06:00:00+00:00",
+        "capture_status": "captured_exact"
+      }
+    ]
+  },
+  "repeatedMigration": {
+    "repeatedSteps": 8,
+    "duplicates": []
+  },
+  "results": [
+    {
+      "id": 1,
+      "case_name": "database-concurrency-boundaries",
+      "result": {
+        "rows": [
+          {
+            "id": 1,
+            "odds": 1.66,
+            "match_id": 900001,
+            "target_at": "2026-09-27T06:16:34.039+00:00",
+            "observed_at": "2026-09-27T06:17:54.083873+00:00",
+            "sample_kind": "t11h",
+            "capture_status": "captured_fallback"
+          }
+        ],
+        "racing": [
+          {
+            "saved": true,
+            "status": "captured_fallback"
+          },
+          {
+            "saved": true,
+            "status": "captured_fallback"
+          },
+          {
+            "saved": true,
+            "status": "captured_fallback"
+          },
+          {
+            "saved": true,
+            "status": "captured_fallback"
+          },
+          {
+            "saved": true,
+            "status": "captured_fallback"
+          },
+          {
+            "saved": true,
+            "status": "captured_fallback"
+          },
+          {
+            "saved": true,
+            "status": "captured_fallback"
+          },
+          {
+            "saved": true,
+            "status": "captured_fallback"
+          }
+        ],
+        "boundary": [
+          {
+            "name": "before_T5",
+            "result": {
+              "saved": false,
+              "status": null
+            },
+            "records": []
+          },
+          {
+            "name": "inside_T5",
+            "result": {
+              "saved": true,
+              "status": "captured_fallback"
+            },
+            "records": [
+              {
+                "id": 12,
+                "target_at": "2026-09-27T06:16:34.221+00:00",
+                "observed_at": "2026-09-27T06:17:54.248278+00:00"
+              }
+            ]
+          },
+          {
+            "name": "after_kickoff",
+            "result": {
+              "saved": false,
+              "status": null
+            },
+            "records": []
+          }
+        ],
+        "testData": "DB mechanics; copied production odds replay, not a new live capture",
+        "leaseRows": [
+          {
+            "id": 13,
+            "match_id": 900005,
+            "target_at": "2026-09-27T06:17:54.282+00:00"
+          }
+        ],
+        "concurrent": [
+          {
+            "acquired": true
+          },
+          {
+            "ok": true,
+            "found": 0,
+            "saved": 0,
+            "targetAt": "2026-09-27T06:17:54.282Z",
+            "retryQueued": false,
+            "pausedForPriority": true
+          }
+        ],
+        "executions": 1,
+        "sequential": [
+          {
+            "saved": true,
+            "status": "captured_fallback"
+          },
+          {
+            "saved": true,
+            "status": "captured_fallback"
+          },
+          {
+            "saved": true,
+            "status": "captured_fallback"
+          }
+        ],
+        "requestedTargetAt": "2026-09-27T06:16:34.039Z"
+      },
+      "created_at": "2026-09-27T06:17:55.575491+00:00"
+    },
+    {
+      "id": 2,
+      "case_name": "priority-order",
+      "result": {
+        "order": [
+          "T5",
+          "T1",
+          "hourly",
+          "manual",
+          "background"
+        ],
+        "checks": [
+          {
+            "behind": "T5",
+            "paused": true,
+            "blocked": "T1"
+          },
+          {
+            "job": "T5",
+            "result": {
+              "acquired": true
+            }
+          },
+          {
+            "behind": "T1",
+            "paused": true,
+            "blocked": "hourly"
+          },
+          {
+            "job": "T1",
+            "result": {
+              "acquired": true
+            }
+          },
+          {
+            "behind": "hourly",
+            "paused": true,
+            "blocked": "manual"
+          },
+          {
+            "job": "hourly",
+            "result": {
+              "acquired": true
+            }
+          },
+          {
+            "behind": "manual",
+            "paused": true,
+            "blocked": "background"
+          },
+          {
+            "job": "manual",
+            "result": {
+              "acquired": true
+            }
+          },
+          {
+            "job": "background",
+            "result": {
+              "acquired": true
+            }
+          }
+        ]
+      },
+      "created_at": "2026-09-27T06:18:30.302624+00:00"
+    },
+    {
+      "id": 3,
+      "case_name": "sql-clock-boundaries",
+      "result": [
+        {
+          "label": "sql_before_T5",
+          "actual": "2026-09-27T06:20:12.004Z",
+          "anchor": "2026-09-27T06:20:41.942Z",
+          "kickoff": "2026-09-27T06:25:41.942Z",
+          "returned": []
+        },
+        {
+          "label": "sql_inside_T5",
+          "actual": "2026-09-27T06:20:12.033Z",
+          "anchor": "2026-09-27T06:18:51.942Z",
+          "kickoff": "2026-09-27T06:23:51.942Z",
+          "returned": [
+            {
+              "id": 14,
+              "capture_status": "captured_retry"
+            }
+          ]
+        },
+        {
+          "label": "sql_after_kickoff",
+          "actual": "2026-09-27T06:20:12.051Z",
+          "anchor": "2026-09-27T06:14:11.942Z",
+          "kickoff": "2026-09-27T06:19:11.942Z",
+          "returned": []
+        }
+      ],
+      "created_at": "2026-09-27T06:20:12.058945+00:00"
+    },
+    {
+      "id": 4,
+      "case_name": "live-source-fallback",
+      "result": {
+        "result": {
+          "items": [],
+          "attempts": [
+            {
+              "found": 0,
+              "detail": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0",
+              "source": "early",
+              "fallback": false
+            },
+            {
+              "found": 0,
+              "detail": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0",
+              "source": "early",
+              "fallback": true
+            },
+            {
+              "found": 0,
+              "detail": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0",
+              "source": "date:09/28",
+              "fallback": true
+            },
+            {
+              "found": 0,
+              "detail": "page list empty or source not ready",
+              "source": "today",
+              "fallback": true
+            },
+            {
+              "found": 0,
+              "detail": "page list empty or source not ready",
+              "source": "favorites",
+              "fallback": true
+            },
+            {
+              "found": 0,
+              "detail": "page list empty or source not ready",
+              "source": "entry:Parlay",
+              "fallback": true
+            },
+            {
+              "found": 0,
+              "detail": "page list empty or source not ready",
+              "source": "entry:All markets",
+              "fallback": true
+            },
+            {
+              "found": 0,
+              "detail": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0",
+              "source": "entry:Main markets",
+              "fallback": true
+            },
+            {
+              "found": 0,
+              "detail": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0",
+              "source": "entry:Special markets",
+              "fallback": true
+            }
+          ],
+          "diagnostic": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0; Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0; Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0; page list empty or source not ready; page list empty or source not ready; page list empty or source not ready; page list empty or source not ready; Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0; Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0",
+          "captureStates": [
+            {
+              "id": 403,
+              "status": "failed_source_not_found",
+              "targetAt": "2026-09-27T06:00:00Z"
+            },
+            {
+              "id": 404,
+              "status": "failed_source_not_found",
+              "targetAt": "2026-09-27T06:00:00Z"
+            },
+            {
+              "id": 407,
+              "status": "failed_source_not_found",
+              "targetAt": "2026-09-27T06:00:00Z"
+            }
+          ]
+        },
+        "records": [
+          {
+            "fast": true,
+            "odds": null,
+            "items": [],
+            "ready": true,
+            "diagnostic": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0",
+            "snapshotId": null,
+            "sourceEntry": "early",
+            "selectedLine": null,
+            "actualCaptureTime": "2026-09-27T06:19:52.113Z",
+            "requestedTargetAt": "2026-09-27T06:00:00Z"
+          },
+          {
+            "fast": false,
+            "odds": null,
+            "items": [],
+            "ready": true,
+            "diagnostic": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0",
+            "snapshotId": null,
+            "sourceEntry": "early",
+            "selectedLine": null,
+            "actualCaptureTime": "2026-09-27T06:19:58.520Z",
+            "requestedTargetAt": "2026-09-27T06:00:00Z"
+          },
+          {
+            "fast": false,
+            "odds": null,
+            "items": [],
+            "ready": true,
+            "diagnostic": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0",
+            "snapshotId": null,
+            "sourceEntry": "date:09/28",
+            "selectedLine": null,
+            "actualCaptureTime": "2026-09-27T06:20:00.412Z",
+            "requestedTargetAt": "2026-09-27T06:00:00Z"
+          },
+          {
+            "odds": null,
+            "ready": false,
+            "snapshotId": null,
+            "sourceEntry": "today",
+            "selectedLine": null,
+            "actualCaptureTime": "2026-09-27T06:20:13.449Z",
+            "requestedTargetAt": "2026-09-27T06:00:00Z"
+          },
+          {
+            "odds": null,
+            "ready": false,
+            "snapshotId": null,
+            "sourceEntry": "favorites",
+            "selectedLine": null,
+            "actualCaptureTime": "2026-09-27T06:20:23.447Z",
+            "requestedTargetAt": "2026-09-27T06:00:00Z"
+          },
+          {
+            "odds": null,
+            "ready": false,
+            "snapshotId": null,
+            "sourceEntry": "entry:Parlay",
+            "selectedLine": null,
+            "actualCaptureTime": "2026-09-27T06:20:31.334Z",
+            "requestedTargetAt": "2026-09-27T06:00:00Z"
+          },
+          {
+            "odds": null,
+            "ready": false,
+            "snapshotId": null,
+            "sourceEntry": "entry:All markets",
+            "selectedLine": null,
+            "actualCaptureTime": "2026-09-27T06:20:38.958Z",
+            "requestedTargetAt": "2026-09-27T06:00:00Z"
+          },
+          {
+            "fast": false,
+            "odds": null,
+            "items": [],
+            "ready": true,
+            "diagnostic": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0",
+            "snapshotId": null,
+            "sourceEntry": "entry:Main markets",
+            "selectedLine": null,
+            "actualCaptureTime": "2026-09-27T06:20:44.915Z",
+            "requestedTargetAt": "2026-09-27T06:00:00Z"
+          },
+          {
+            "fast": false,
+            "odds": null,
+            "items": [],
+            "ready": true,
+            "diagnostic": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0",
+            "snapshotId": null,
+            "sourceEntry": "entry:Special markets",
+            "selectedLine": null,
+            "actualCaptureTime": "2026-09-27T06:20:54.728Z",
+            "requestedTargetAt": "2026-09-27T06:00:00Z"
+          }
+        ],
+        "testType": "read-only live source recovery; no production database writes"
+      },
+      "created_at": "2026-09-27T06:22:36.409179+00:00"
+    },
+    {
+      "id": 5,
+      "case_name": "lease-fencing-recovery",
+      "result": {
+        "recovered": {
+          "acquired": true
+        },
+        "remainingLeases": [],
+        "staleOwnerWrite": {
+          "saved": false,
+          "status": null
+        }
+      },
+      "created_at": "2026-09-27T06:24:25.631203+00:00"
+    },
+    {
+      "id": 6,
+      "case_name": "live-early-control",
+      "result": {
+        "at": "2026-09-27T06:24:02.545Z",
+        "ready": true,
+        "result": {
+          "items": [
+            {
+              "id": 910000,
+              "line": "1/1.5",
+              "odds": 1.93,
+              "kickoff": "2026-09-29T02:45:00+08:00",
+              "rollover": false,
+              "kickoffRaw": "09/29 02:45"
+            },
+            {
+              "id": 910001,
+              "line": "1",
+              "odds": 1.73,
+              "kickoff": "2026-09-29T02:45:00+08:00",
+              "rollover": false,
+              "kickoffRaw": "09/29 02:45"
+            },
+            {
+              "id": 910002,
+              "line": "1",
+              "odds": 2.06,
+              "kickoff": "2026-09-28T23:59:00+08:00",
+              "rollover": false,
+              "kickoffRaw": "09/28 23:59"
+            },
+            {
+              "id": 910003,
+              "line": "0.5/1",
+              "odds": 1.82,
+              "kickoff": "2026-09-29T02:45:00+08:00",
+              "rollover": false,
+              "kickoffRaw": "09/29 02:45"
+            },
+            {
+              "id": 910004,
+              "line": "1",
+              "odds": 1.98,
+              "kickoff": "2026-09-29T02:45:00+08:00",
+              "rollover": false,
+              "kickoffRaw": "09/29 02:45"
+            },
+            {
+              "id": 910005,
+              "line": "1/1.5",
+              "odds": 2.14,
+              "kickoff": "2026-09-29T02:45:00+08:00",
+              "rollover": false,
+              "kickoffRaw": "09/29 02:45"
+            },
+            {
+              "id": 910006,
+              "line": "0.5/1",
+              "odds": 1.65,
+              "kickoff": "2026-09-28T23:59:00+08:00",
+              "rollover": false,
+              "kickoffRaw": "09/28 23:59"
+            },
+            {
+              "id": 910007,
+              "line": "0.5/1",
+              "odds": 1.68,
+              "kickoff": "2026-09-28T23:59:00+08:00",
+              "rollover": false,
+              "kickoffRaw": "09/28 23:59"
+            },
+            {
+              "id": 910008,
+              "line": "0.5/1",
+              "odds": 1.7,
+              "kickoff": "2026-09-28T19:00:00+08:00",
+              "rollover": false,
+              "kickoffRaw": "09/28 19:00"
+            },
+            {
+              "id": 910009,
+              "line": "1",
+              "odds": 1.89,
+              "kickoff": "2026-09-29T02:30:00+08:00",
+              "rollover": false,
+              "kickoffRaw": "09/29 02:30"
+            },
+            {
+              "id": 910010,
+              "line": "1",
+              "odds": 1.83,
+              "kickoff": "2026-09-28T17:00:00+08:00",
+              "rollover": false,
+              "kickoffRaw": "09/28 17:00"
+            },
+            {
+              "id": 910011,
+              "line": "1/1.5",
+              "odds": 2.03,
+              "kickoff": "2026-09-28T20:30:00+08:00",
+              "rollover": false,
+              "kickoffRaw": "09/28 20:30"
+            }
+          ],
+          "frames": 8,
+          "diagnostic": ""
+        },
+        "source": "early",
+        "controls": [
+          {
+            "id": 910000,
+            "away": "France",
+            "home": "Belgium",
+            "kickoffRaw": "09/2902:45"
+          },
+          {
+            "id": 910001,
+            "away": "Italy",
+            "home": "Turkey",
+            "kickoffRaw": "09/2902:45"
+          },
+          {
+            "id": 910002,
+            "away": "Ukraine",
+            "home": "Georgia",
+            "kickoffRaw": "09/2823:59"
+          },
+          {
+            "id": 910003,
+            "away": "Hungary",
+            "home": "Northern Ireland",
+            "kickoffRaw": "09/2902:45"
+          },
+          {
+            "id": 910004,
+            "away": "Bosnia-Herzegovina",
+            "home": "Romania",
+            "kickoffRaw": "09/2902:45"
+          },
+          {
+            "id": 910005,
+            "away": "Poland",
+            "home": "Sweden",
+            "kickoffRaw": "09/2902:45"
+          },
+          {
+            "id": 910006,
+            "away": "Montenegro",
+            "home": "Armenia",
+            "kickoffRaw": "09/2823:59"
+          },
+          {
+            "id": 910007,
+            "away": "Cyprus",
+            "home": "Latvia",
+            "kickoffRaw": "09/2823:59"
+          },
+          {
+            "id": 910008,
+            "away": "Uruguay",
+            "home": "Korea Republic",
+            "kickoffRaw": "09/2819:00"
+          },
+          {
+            "id": 910009,
+            "away": "CD Castellon",
+            "home": "Leganes",
+            "kickoffRaw": "09/2902:30"
+          },
+          {
+            "id": 910010,
+            "away": "Bangladesh",
+            "home": "Singapore",
+            "kickoffRaw": "09/2817:00"
+          },
+          {
+            "id": 910011,
+            "away": "Malaysia",
+            "home": "Indonesia",
+            "kickoffRaw": "09/2820:30"
+          }
+        ]
+      },
+      "created_at": "2026-09-27T06:25:51.570664+00:00"
+    },
+    {
+      "id": 7,
+      "case_name": "live-today-diagnostic",
+      "result": {
+        "ready": true,
+        "opened": true,
+        "result": {
+          "items": [],
+          "frames": 8,
+          "diagnostic": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0"
+        },
+        "source": "today",
+        "states": [
+          {
+            "rows": 326,
+            "ready": true,
+            "oldDocument": false
+          }
+        ],
+        "diagnosticOnly": true,
+        "actualCaptureTime": "2026-09-27T06:25:16.631Z"
+      },
+      "created_at": "2026-09-27T06:25:51.69815+00:00"
+    }
+  ],
+  "scans": [
+    {
+      "id": 1,
+      "match_id": 403,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:19:52.113+00:00",
+      "actual_capture_time": null,
+      "source_entry": "early",
+      "phase": "fast",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "TEAM_MATCH",
+      "detail": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0"
+    },
+    {
+      "id": 2,
+      "match_id": 404,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:19:52.113+00:00",
+      "actual_capture_time": null,
+      "source_entry": "early",
+      "phase": "fast",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "TEAM_MATCH",
+      "detail": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0"
+    },
+    {
+      "id": 3,
+      "match_id": 407,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:19:52.113+00:00",
+      "actual_capture_time": null,
+      "source_entry": "early",
+      "phase": "fast",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "TEAM_MATCH",
+      "detail": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0"
+    },
+    {
+      "id": 4,
+      "match_id": 403,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:19:58.52+00:00",
+      "actual_capture_time": null,
+      "source_entry": "early",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "TEAM_MATCH",
+      "detail": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0"
+    },
+    {
+      "id": 5,
+      "match_id": 404,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:19:58.52+00:00",
+      "actual_capture_time": null,
+      "source_entry": "early",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "TEAM_MATCH",
+      "detail": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0"
+    },
+    {
+      "id": 6,
+      "match_id": 407,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:19:58.52+00:00",
+      "actual_capture_time": null,
+      "source_entry": "early",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "TEAM_MATCH",
+      "detail": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0"
+    },
+    {
+      "id": 7,
+      "match_id": 403,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:00.412+00:00",
+      "actual_capture_time": null,
+      "source_entry": "date:09/28",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "TEAM_MATCH",
+      "detail": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0"
+    },
+    {
+      "id": 8,
+      "match_id": 404,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:00.412+00:00",
+      "actual_capture_time": null,
+      "source_entry": "date:09/28",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "TEAM_MATCH",
+      "detail": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0"
+    },
+    {
+      "id": 9,
+      "match_id": 407,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:00.412+00:00",
+      "actual_capture_time": null,
+      "source_entry": "date:09/28",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "TEAM_MATCH",
+      "detail": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0"
+    },
+    {
+      "id": 10,
+      "match_id": 403,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:13.449+00:00",
+      "actual_capture_time": null,
+      "source_entry": "today",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "SOURCE_READY",
+      "detail": "page list empty or source not ready"
+    },
+    {
+      "id": 11,
+      "match_id": 404,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:13.449+00:00",
+      "actual_capture_time": null,
+      "source_entry": "today",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "SOURCE_READY",
+      "detail": "page list empty or source not ready"
+    },
+    {
+      "id": 12,
+      "match_id": 407,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:13.449+00:00",
+      "actual_capture_time": null,
+      "source_entry": "today",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "SOURCE_READY",
+      "detail": "page list empty or source not ready"
+    },
+    {
+      "id": 13,
+      "match_id": 403,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:23.447+00:00",
+      "actual_capture_time": null,
+      "source_entry": "favorites",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "SOURCE_READY",
+      "detail": "page list empty or source not ready"
+    },
+    {
+      "id": 14,
+      "match_id": 404,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:23.447+00:00",
+      "actual_capture_time": null,
+      "source_entry": "favorites",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "SOURCE_READY",
+      "detail": "page list empty or source not ready"
+    },
+    {
+      "id": 15,
+      "match_id": 407,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:23.447+00:00",
+      "actual_capture_time": null,
+      "source_entry": "favorites",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "SOURCE_READY",
+      "detail": "page list empty or source not ready"
+    },
+    {
+      "id": 16,
+      "match_id": 403,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:31.334+00:00",
+      "actual_capture_time": null,
+      "source_entry": "entry:Parlay",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "SOURCE_READY",
+      "detail": "page list empty or source not ready"
+    },
+    {
+      "id": 17,
+      "match_id": 404,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:31.334+00:00",
+      "actual_capture_time": null,
+      "source_entry": "entry:Parlay",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "SOURCE_READY",
+      "detail": "page list empty or source not ready"
+    },
+    {
+      "id": 18,
+      "match_id": 407,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:31.334+00:00",
+      "actual_capture_time": null,
+      "source_entry": "entry:Parlay",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "SOURCE_READY",
+      "detail": "page list empty or source not ready"
+    },
+    {
+      "id": 19,
+      "match_id": 403,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:38.958+00:00",
+      "actual_capture_time": null,
+      "source_entry": "entry:All markets",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "SOURCE_READY",
+      "detail": "page list empty or source not ready"
+    },
+    {
+      "id": 20,
+      "match_id": 404,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:38.958+00:00",
+      "actual_capture_time": null,
+      "source_entry": "entry:All markets",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "SOURCE_READY",
+      "detail": "page list empty or source not ready"
+    },
+    {
+      "id": 21,
+      "match_id": 407,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:38.958+00:00",
+      "actual_capture_time": null,
+      "source_entry": "entry:All markets",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "SOURCE_READY",
+      "detail": "page list empty or source not ready"
+    },
+    {
+      "id": 22,
+      "match_id": 403,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:44.915+00:00",
+      "actual_capture_time": null,
+      "source_entry": "entry:Main markets",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "TEAM_MATCH",
+      "detail": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0"
+    },
+    {
+      "id": 23,
+      "match_id": 404,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:44.915+00:00",
+      "actual_capture_time": null,
+      "source_entry": "entry:Main markets",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "TEAM_MATCH",
+      "detail": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0"
+    },
+    {
+      "id": 24,
+      "match_id": 407,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:44.915+00:00",
+      "actual_capture_time": null,
+      "source_entry": "entry:Main markets",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "TEAM_MATCH",
+      "detail": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0"
+    },
+    {
+      "id": 25,
+      "match_id": 403,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:54.728+00:00",
+      "actual_capture_time": null,
+      "source_entry": "entry:Special markets",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "TEAM_MATCH",
+      "detail": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0"
+    },
+    {
+      "id": 26,
+      "match_id": 404,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:54.728+00:00",
+      "actual_capture_time": null,
+      "source_entry": "entry:Special markets",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "TEAM_MATCH",
+      "detail": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0"
+    },
+    {
+      "id": 27,
+      "match_id": 407,
+      "requested_target_at": "2026-09-27T06:00:00+00:00",
+      "attempted_at": "2026-09-27T06:20:54.728+00:00",
+      "actual_capture_time": null,
+      "source_entry": "entry:Special markets",
+      "phase": "fallback",
+      "selected_line": null,
+      "odds": null,
+      "snapshot_id": null,
+      "audit_status": "failed_source_not_found",
+      "failure_stage": "TEAM_MATCH",
+      "detail": "Denmark vs Wales: team row not unique (0) candidates=0; Serbia vs Netherlands: team row not unique (0) candidates=0; Austria vs Kosovo: team row not unique (0) candidates=0"
+    },
+    {
+      "id": 28,
+      "match_id": 910000,
+      "requested_target_at": null,
+      "attempted_at": "2026-09-27T06:24:02.545+00:00",
+      "actual_capture_time": "2026-09-27T06:24:02.545+00:00",
+      "source_entry": "early",
+      "phase": "fast",
+      "selected_line": "1/1.5",
+      "odds": 1.93,
+      "snapshot_id": null,
+      "audit_status": "SOURCE_SUCCESS",
+      "failure_stage": null,
+      "detail": "Live source control only; formal targetAt/snapshot are null because no current checkpoint is due"
+    },
+    {
+      "id": 29,
+      "match_id": 910001,
+      "requested_target_at": null,
+      "attempted_at": "2026-09-27T06:24:02.545+00:00",
+      "actual_capture_time": "2026-09-27T06:24:02.545+00:00",
+      "source_entry": "early",
+      "phase": "fast",
+      "selected_line": "1",
+      "odds": 1.73,
+      "snapshot_id": null,
+      "audit_status": "SOURCE_SUCCESS",
+      "failure_stage": null,
+      "detail": "Live source control only; formal targetAt/snapshot are null because no current checkpoint is due"
+    },
+    {
+      "id": 30,
+      "match_id": 910002,
+      "requested_target_at": null,
+      "attempted_at": "2026-09-27T06:24:02.545+00:00",
+      "actual_capture_time": "2026-09-27T06:24:02.545+00:00",
+      "source_entry": "early",
+      "phase": "fast",
+      "selected_line": "1",
+      "odds": 2.06,
+      "snapshot_id": null,
+      "audit_status": "SOURCE_SUCCESS",
+      "failure_stage": null,
+      "detail": "Live source control only; formal targetAt/snapshot are null because no current checkpoint is due"
+    },
+    {
+      "id": 31,
+      "match_id": 910003,
+      "requested_target_at": null,
+      "attempted_at": "2026-09-27T06:24:02.545+00:00",
+      "actual_capture_time": "2026-09-27T06:24:02.545+00:00",
+      "source_entry": "early",
+      "phase": "fast",
+      "selected_line": "0.5/1",
+      "odds": 1.82,
+      "snapshot_id": null,
+      "audit_status": "SOURCE_SUCCESS",
+      "failure_stage": null,
+      "detail": "Live source control only; formal targetAt/snapshot are null because no current checkpoint is due"
+    },
+    {
+      "id": 32,
+      "match_id": 910004,
+      "requested_target_at": null,
+      "attempted_at": "2026-09-27T06:24:02.545+00:00",
+      "actual_capture_time": "2026-09-27T06:24:02.545+00:00",
+      "source_entry": "early",
+      "phase": "fast",
+      "selected_line": "1",
+      "odds": 1.98,
+      "snapshot_id": null,
+      "audit_status": "SOURCE_SUCCESS",
+      "failure_stage": null,
+      "detail": "Live source control only; formal targetAt/snapshot are null because no current checkpoint is due"
+    },
+    {
+      "id": 33,
+      "match_id": 910005,
+      "requested_target_at": null,
+      "attempted_at": "2026-09-27T06:24:02.545+00:00",
+      "actual_capture_time": "2026-09-27T06:24:02.545+00:00",
+      "source_entry": "early",
+      "phase": "fast",
+      "selected_line": "1/1.5",
+      "odds": 2.14,
+      "snapshot_id": null,
+      "audit_status": "SOURCE_SUCCESS",
+      "failure_stage": null,
+      "detail": "Live source control only; formal targetAt/snapshot are null because no current checkpoint is due"
+    },
+    {
+      "id": 34,
+      "match_id": 910006,
+      "requested_target_at": null,
+      "attempted_at": "2026-09-27T06:24:02.545+00:00",
+      "actual_capture_time": "2026-09-27T06:24:02.545+00:00",
+      "source_entry": "early",
+      "phase": "fast",
+      "selected_line": "0.5/1",
+      "odds": 1.65,
+      "snapshot_id": null,
+      "audit_status": "SOURCE_SUCCESS",
+      "failure_stage": null,
+      "detail": "Live source control only; formal targetAt/snapshot are null because no current checkpoint is due"
+    },
+    {
+      "id": 35,
+      "match_id": 910007,
+      "requested_target_at": null,
+      "attempted_at": "2026-09-27T06:24:02.545+00:00",
+      "actual_capture_time": "2026-09-27T06:24:02.545+00:00",
+      "source_entry": "early",
+      "phase": "fast",
+      "selected_line": "0.5/1",
+      "odds": 1.68,
+      "snapshot_id": null,
+      "audit_status": "SOURCE_SUCCESS",
+      "failure_stage": null,
+      "detail": "Live source control only; formal targetAt/snapshot are null because no current checkpoint is due"
+    },
+    {
+      "id": 36,
+      "match_id": 910008,
+      "requested_target_at": null,
+      "attempted_at": "2026-09-27T06:24:02.545+00:00",
+      "actual_capture_time": "2026-09-27T06:24:02.545+00:00",
+      "source_entry": "early",
+      "phase": "fast",
+      "selected_line": "0.5/1",
+      "odds": 1.7,
+      "snapshot_id": null,
+      "audit_status": "SOURCE_SUCCESS",
+      "failure_stage": null,
+      "detail": "Live source control only; formal targetAt/snapshot are null because no current checkpoint is due"
+    },
+    {
+      "id": 37,
+      "match_id": 910009,
+      "requested_target_at": null,
+      "attempted_at": "2026-09-27T06:24:02.545+00:00",
+      "actual_capture_time": "2026-09-27T06:24:02.545+00:00",
+      "source_entry": "early",
+      "phase": "fast",
+      "selected_line": "1",
+      "odds": 1.89,
+      "snapshot_id": null,
+      "audit_status": "SOURCE_SUCCESS",
+      "failure_stage": null,
+      "detail": "Live source control only; formal targetAt/snapshot are null because no current checkpoint is due"
+    },
+    {
+      "id": 38,
+      "match_id": 910010,
+      "requested_target_at": null,
+      "attempted_at": "2026-09-27T06:24:02.545+00:00",
+      "actual_capture_time": "2026-09-27T06:24:02.545+00:00",
+      "source_entry": "early",
+      "phase": "fast",
+      "selected_line": "1",
+      "odds": 1.83,
+      "snapshot_id": null,
+      "audit_status": "SOURCE_SUCCESS",
+      "failure_stage": null,
+      "detail": "Live source control only; formal targetAt/snapshot are null because no current checkpoint is due"
+    },
+    {
+      "id": 39,
+      "match_id": 910011,
+      "requested_target_at": null,
+      "attempted_at": "2026-09-27T06:24:02.545+00:00",
+      "actual_capture_time": "2026-09-27T06:24:02.545+00:00",
+      "source_entry": "early",
+      "phase": "fast",
+      "selected_line": "1/1.5",
+      "odds": 2.03,
+      "snapshot_id": null,
+      "audit_status": "SOURCE_SUCCESS",
+      "failure_stage": null,
+      "detail": "Live source control only; formal targetAt/snapshot are null because no current checkpoint is due"
+    }
+  ],
+  "snapshots": [
+    {
+      "id": 1,
+      "match_id": 900001,
+      "sample_kind": "t11h",
+      "selected_line": "1",
+      "odds": 1.66,
+      "target_at": "2026-09-27T06:16:34.039+00:00",
+      "observed_at": "2026-09-27T06:17:54.083873+00:00",
+      "capture_status": "captured_fallback"
+    },
+    {
+      "id": 12,
+      "match_id": 900003,
+      "sample_kind": "last_5min",
+      "selected_line": "1",
+      "odds": 1.66,
+      "target_at": "2026-09-27T06:16:34.221+00:00",
+      "observed_at": "2026-09-27T06:17:54.248278+00:00",
+      "capture_status": "captured_fallback"
+    },
+    {
+      "id": 13,
+      "match_id": 900005,
+      "sample_kind": "t11h",
+      "selected_line": "1",
+      "odds": 1.66,
+      "target_at": "2026-09-27T06:17:54.282+00:00",
+      "observed_at": "2026-09-27T06:17:55.548611+00:00",
+      "capture_status": "captured_fallback"
+    },
+    {
+      "id": 14,
+      "match_id": 900011,
+      "sample_kind": "last_5min",
+      "selected_line": "1",
+      "odds": 1.66,
+      "target_at": "2026-09-27T06:18:51.942+00:00",
+      "observed_at": "2026-09-27T06:20:12.02912+00:00",
+      "capture_status": "captured_retry"
+    },
+    {
+      "id": 552,
+      "match_id": 403,
+      "sample_kind": "baseline",
+      "selected_line": "1",
+      "odds": 1.79,
+      "target_at": null,
+      "observed_at": "2026-09-27T04:15:33.621673+00:00",
+      "capture_status": null
+    },
+    {
+      "id": 553,
+      "match_id": 404,
+      "sample_kind": "baseline",
+      "selected_line": "1/1.5",
+      "odds": 2.04,
+      "target_at": null,
+      "observed_at": "2026-09-27T04:15:33.658678+00:00",
+      "capture_status": null
+    },
+    {
+      "id": 554,
+      "match_id": 407,
+      "sample_kind": "baseline",
+      "selected_line": "1",
+      "odds": 1.79,
+      "target_at": null,
+      "observed_at": "2026-09-27T04:15:33.761441+00:00",
+      "capture_status": null
+    },
+    {
+      "id": 561,
+      "match_id": 403,
+      "sample_kind": "t11h",
+      "selected_line": "1",
+      "odds": 1.79,
+      "target_at": "2026-09-27T05:00:00+00:00",
+      "observed_at": "2026-09-27T05:00:00+00:00",
+      "capture_status": "captured_exact"
+    },
+    {
+      "id": 562,
+      "match_id": 404,
+      "sample_kind": "t11h",
+      "selected_line": "1/1.5",
+      "odds": 2.04,
+      "target_at": "2026-09-27T05:00:00+00:00",
+      "observed_at": "2026-09-27T05:00:00+00:00",
+      "capture_status": "captured_exact"
+    },
+    {
+      "id": 563,
+      "match_id": 407,
+      "sample_kind": "t11h",
+      "selected_line": "1",
+      "odds": 1.79,
+      "target_at": "2026-09-27T05:00:00+00:00",
+      "observed_at": "2026-09-27T05:00:00+00:00",
+      "capture_status": "captured_exact"
+    },
+    {
+      "id": 564,
+      "match_id": 403,
+      "sample_kind": "t10h",
+      "selected_line": "1",
+      "odds": 1.66,
+      "target_at": "2026-09-27T06:00:00+00:00",
+      "observed_at": "2026-09-27T06:04:24.349333+00:00",
+      "capture_status": "captured_exact"
+    },
+    {
+      "id": 565,
+      "match_id": 404,
+      "sample_kind": "t10h",
+      "selected_line": "1/1.5",
+      "odds": 2,
+      "target_at": "2026-09-27T06:00:00+00:00",
+      "observed_at": "2026-09-27T06:04:24.403393+00:00",
+      "capture_status": "captured_exact"
+    },
+    {
+      "id": 566,
+      "match_id": 407,
+      "sample_kind": "t10h",
+      "selected_line": "1",
+      "odds": 1.8,
+      "target_at": "2026-09-27T06:00:00+00:00",
+      "observed_at": "2026-09-27T06:04:24.433837+00:00",
+      "capture_status": "captured_exact"
+    }
+  ],
+  "auditCount": [
+    {
+      "count": 27
+    }
+  ],
+  "leaseCount": [
+    {
+      "count": 0
+    }
+  ]
+}

@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>公式A · Football Analyzer</title>
+  <link rel="stylesheet" href="/style.css"/>
+  <link rel="stylesheet" href="/form-extra.css"/>
+</head>
+<body>
+  <header>
+    <div>
+      <div class="eyebrow">FOOTBALL WORKSHEET SYSTEM</div>
+      <h1>公式A(资料)</h1>
+      <p>固定模板 · 单场比赛 · 主客队赛程与状态</p>
+    </div>
+    <div class="badge">America/New_York</div>
+  </header>
+
+  <main>
+    <nav class="formula-tabs" aria-label="Formula modules">
+      <button class="formula-tab active" data-target="moduleA">公式A(资料) <small>V14</small></button>
+      <button class="formula-tab" data-target="moduleC">公式B(分析意图)</button>
+      <button class="formula-tab" data-target="moduleD">公式C(分析实时意图)</button>
+      <button class="formula-tab" data-target="moduleE">公式D(赔率动态)</button>
+    </nav>
+
+    <div id="moduleA" class="formula-module active">
+    <section class="panel setup batch-panel">
+      <div class="module-head">
+        <div><div class="eyebrow">BATCH EXCEL · AUTO ROUTING · MAX 20</div><h2>公式A(资料) · 批量生成 Excel</h2></div>
+        <span class="lock-badge">最多20场 · 自动识别普通赛事 / 欧冠</span>
+      </div>
+      <label>比赛列表（推荐：主队一行、客队一行，场次之间空一行；也支持 Home vs Away）
+        <textarea id="aBatchFixtures" rows="12" maxlength="2400" placeholder="Netherlands&#10;Germany&#10;&#10;Norway&#10;Denmark&#10;&#10;Portugal&#10;Wales"></textarea>
+      </label>
+      <div class="module-actions">
+        <button id="aImageRead" type="button">上传图片识别球队</button>
+        <input id="aImageFile" type="file" accept="image/png,image/jpeg,image/webp,image/*" hidden>
+        <button id="aBatchRun" class="primary">批量生成 A Excel</button>
+        <span id="aBatchStatus" class="module-status">输入1–20场比赛即可。</span>
+      </div>
+      <div class="rule-note">系统逐场自动识别赛事。普通联赛、杯赛、友谊赛继续执行原公式A资料规则；欧冠比赛自动调用原公式B欧冠专用规则。两套底层引擎仍独立，避免互相影响。生成完成后一次下载 ZIP，内含每场独立 Excel。</div>
+    </section>
+    <section class="panel setup legacy-a">
+      <h2>比赛信息</h2>
+      <div class="grid four">
+        <label>Home<input id="home" placeholder="e.g. Barcelona"/></label>
+        <label>Away<input id="away" placeholder="e.g. Real Madrid"/></label>
+        <label>Match Date<input id="matchDate" type="date" readonly/></label>
+        <label>Competition<input id="competition" placeholder="Auto detected" readonly/></label>
+      </div>
+      <div class="notice">排名请按任务当时官方最新榜单填写；当天已结束比赛先计入。赛程必须统计一线队所有赛事，包括联赛、杯赛、欧战与友谊赛。</div>
+    </section>
+
+    <div class="teams legacy-a">
+      <section class="panel team" data-side="home">
+        <h2>HOME</h2>
+        <div class="grid three">
+          <label>Avg GF<input id="homeGF" type="number" step="0.01"/></label>
+          <label>Avg GA<input id="homeGA" type="number" step="0.01"/></label>
+          <label>Coach Style<select id="homeStyle"><option></option><option>进攻</option><option>微攻</option><option>微守</option><option>防守</option></select></label>
+        </div>
+        <h3>官方排名（上3 + 本队 + 下3）</h3>
+        <div id="homeRanks" class="rank-list"></div>
+        <h3>前3场实际比赛 + 本场 + 后2场</h3>
+        <div id="homeSchedule"></div>
+        <h3>本赛事最近最多5场 Form</h3>
+        <div id="homeFormInputs" class="form-strip"></div>
+        <div class="metrics">
+          <div><span>Days</span><strong id="homeDays">—</strong></div>
+          <div><span>Form</span><strong id="homeForm">—</strong></div>
+          <div><span>状态</span><strong id="homeState">—</strong></div>
+        </div>
+      </section>
+
+      <section class="panel team" data-side="away">
+        <h2>AWAY</h2>
+        <div class="grid three">
+          <label>Avg GF<input id="awayGF" type="number" step="0.01"/></label>
+          <label>Avg GA<input id="awayGA" type="number" step="0.01"/></label>
+          <label>Coach Style<select id="awayStyle"><option></option><option>进攻</option><option>微攻</option><option>微守</option><option>防守</option></select></label>
+        </div>
+        <h3>官方排名（上3 + 本队 + 下3）</h3>
+        <div id="awayRanks" class="rank-list"></div>
+        <h3>前3场实际比赛 + 本场 + 后2场</h3>
+        <div id="awaySchedule"></div>
+        <h3>本赛事最近最多5场 Form</h3>
+        <div id="awayFormInputs" class="form-strip"></div>
+        <div class="metrics">
+          <div><span>Days</span><strong id="awayDays">—</strong></div>
+          <div><span>Form</span><strong id="awayForm">—</strong></div>
+          <div><span>状态</span><strong id="awayState">—</strong></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel actions legacy-a">
+      <button id="auto" class="primary">一键自动生成 Excel</button>
+      <button id="calc">重新计算</button>
+      <button id="export">导出 Excel</button>
+      <button id="reset" class="ghost">清空</button>
+      <span id="status"></span>
+    </section>
+    </div>
+
+    <div id="moduleB" class="formula-module">
+      <section class="panel setup">
+        <div class="module-head">
+          <div><div class="eyebrow">UCL ONLY</div><h2>公式 B · 欧冠专用</h2></div>
+          <span class="lock-badge">已载入锁定规则</span>
+        </div>
+        <label>比赛列表（每行一场：Home vs Away，最多20场）
+          <textarea id="bBatchFixtures" rows="12" maxlength="2400" placeholder="Barcelona vs Arsenal&#10;PSG vs Bayern München"></textarea>
+        </label>
+        <div class="legacy-b">
+          <input id="bHome" type="hidden"><input id="bAway" type="hidden">
+        </div>
+        <div class="rule-note">欧冠积分/排名 · 疲劳 · 后两场密度标记 · 本场后最近3场所有赛事 · 完整8场欧冠联赛阶段 · 总积分榜 + 最近5场 W/D/L。公式B不做意图判断。</div>
+        <div class="module-actions">
+          <button id="bImageRead" type="button">上传图片识别球队</button>
+          <input id="bImageFile" type="file" accept="image/png,image/jpeg,image/webp,image/*" hidden>
+          <button id="bRun" class="primary">批量生成 B Excel</button>
+          <button id="bExport" style="display:none">导出 B Excel</button>
+          <span id="bStatus" class="module-status"></span>
+        </div>
+      </section>
+      <section id="bResult" class="panel result-panel empty-state">输入两队后生成公式 B。</section>
+    </div>
+
+    <div id="moduleC" class="formula-module">
+      <section class="panel setup">
+        <div class="module-head">
+          <div><div class="eyebrow">INTENT ENGINE</div><h2>公式B(分析意图) · 赛前意图</h2></div>
+          <span class="lock-badge">已载入锁定规则</span>
+        </div>
+        <label>比赛列表（推荐：主队一行、客队一行，场次之间空一行；也支持 Home vs Away）
+          <textarea id="cFixtures" rows="10" placeholder="Netherlands&#10;Germany&#10;&#10;Norway&#10;Denmark&#10;&#10;Portugal&#10;Wales"></textarea>
+        </label>
+        <div class="rule-note">Master Rules LOCKED：Must Win / Want Win / Hope Win / Don't Lose / ---。欧国联不再使用任何专用意图规则，统一按照公式B原来分析五大联赛的通用规则判断。需要特别正确读取两项基础条件：①欧国联积分按胜3分、平1分、负0分，并结合当前排名、已赛场次与剩余场次计算本场拿分价值；②主客场必须纳入公式B原有的主客场修正。其余仍综合实力差距与现实赢球能力、近期状态、阵容伤停与轮换、赔率、教练意图、后续同赛事赛程压力等因素；实力等级只能作为辅助，不得单独决定意图。欧国联实力四档：优＝Spain / England / France / Portugal / Belgium / Norway / Germany / Netherlands / Italy / Croatia；良＝Switzerland / Denmark / Austria / Serbia / Türkiye / Sweden / Ukraine / Czechia / Greece / Wales / Poland；中＝Scotland / Hungary / Romania / Slovenia / North Macedonia / Georgia / Republic of Ireland / Kosovo / Israel / Bosnia and Herzegovina / Albania / Finland / Slovakia / Iceland / Montenegro / Kazakhstan / Bulgaria / Northern Ireland；差＝Armenia / Belarus / Cyprus / Latvia / Faroe Islands / Moldova / Estonia / Luxembourg / Azerbaijan / Lithuania / Malta / Gibraltar / Andorra / Liechtenstein / San Marino。</div>
+        <div class="module-actions">
+          <button id="cImageRead" type="button">上传图片识别球队</button>
+          <input id="cImageFile" type="file" accept="image/png,image/jpeg,image/webp,image/*" hidden>
+          <button id="cRun" class="primary">生成公式B分析</button>
+          <button id="cExport">导出 B Excel</button>
+          <span id="cStatus" class="module-status"></span>
+        </div>
+      </section>
+      <section id="cResult" class="panel result-panel empty-state">输入比赛列表后生成公式B(分析意图)。</section>
+    </div>
+
+    <div id="moduleD" class="formula-module">
+      <section class="panel setup">
+        <div class="module-head">
+          <div><div class="eyebrow">LIVE BOARD · ALL ACTIVE MATCHES</div><h2>公式C(分析实时意图) · 今日全部已开赛比赛自动监控</h2></div>
+          <span class="lock-badge">不限场数 · 3秒自动检查</span>
+        </div>
+        <div class="rule-note">系统自动读取纽约日期下今天的五大联赛、欧冠、欧联、欧协联，以及欧国联（UEFA Nations League）成年男子国家队比赛。所有已经开赛且尚未结束的目标赛事都会自动进入 公式C(分析实时意图) 监控，不设场数上限；U21/U19、青年队、预备队、B队、女足不纳入。5分钟权重60%，10分钟权重40%；比分与时间只作为背景。落后未追平时最高只能 Equalize；证据不足或5/10分钟趋势明显冲突时显示 ---。</div>
+        <div class="module-actions">
+          <button id="dBoardRefresh" class="primary">立即刷新全部比赛</button>
+          <span id="dBoardStatus" class="module-status">正在初始化今日比赛…</span>
+        </div>
+      </section>
+      <section id="dBoard" class="panel d-board empty-state">正在读取今天已开始的比赛…</section>
+      <section class="panel">
+        <div class="module-head">
+          <div><div class="eyebrow">LEARNING / BACKTEST ENGINE</div><h2>公式C(分析实时意图) · 学习与回测</h2></div>
+          <span class="lock-badge">只学习 · 不自动改正式公式</span>
+        </div>
+        <div id="dLearningSummary" class="rule-note">正在读取学习样本…</div>
+        <div class="module-actions">
+          <button id="dHistoricalRun">立即扫描一批历史比赛</button>
+          <span id="dHistoricalStatus" class="module-status">历史扫描器准备中…</span>
+        </div>
+        <div id="dHistoricalSummary" class="rule-note">Historical Backtest Scanner：正在读取 2024-25 / 2025-26 扫描进度…</div>
+        <div id="dPlayerSummary" class="rule-note">Player Intelligence Registry：正在建立球员姓名、位置、角色与市场价值知识库…</div>
+      </section>
+    </div>
+
+    <div id="moduleE" class="formula-module">
+      <section class="panel setup">
+        <div class="module-head">
+          <div><div class="eyebrow">FIRST-HALF OVER · ODDS TRACKER</div><h2>公式D(赔率动态) · 上半场大球赔率追踪</h2></div>
+          <span class="lock-badge">只输入球队名称 · 自动匹配开赛时间</span>
+        </div>
+        <label>今天的比赛（推荐：主队一行、客队一行，场次之间空一行；也支持 Home vs Away）
+          <textarea id="eFixtures" rows="10" maxlength="2400" placeholder="Netherlands&#10;Germany&#10;&#10;Norway&#10;Denmark&#10;&#10;Portugal&#10;Wales"></textarea>
+        </label>
+        <div class="rule-note">规则已锁定：输入球队名称后，系统先自动识别每场开赛时间；赔率历史从每场比赛开赛前准时12小时开始。T-12 准时抓取并锁定“赔率(盘口)”与“赔率动态(当时赔率)”这两列，之后不再改动；随后在 T-11、T-10、T-9…一直到 T-2 每小时只追加当时准确赔率到 Update 赔率动态，即使数字没变化也照样保存；T-1 单独写入 Last 1 hr，开赛前5分钟单独写入 Last 5 min。每一场都按自己的开赛时间独立计算。从 3573217 已授权赔率页面 FIRST HALF → O/U 中选择“大球赔率”最接近1.88的盘口，只保存对应盘口与大球赔率。每一个 T-12、T-11、T-10…T-1 和开赛前5分钟时间点，都按比赛名称保存该场球队对应的证据截图；Early / Today 哪个页面存在该场比赛就保存哪个页面，两个页面都有则两张都保存。</div>
+        <div class="module-actions">
+          <button id="eImageRead" type="button">上传赔率截图识别</button>
+          <input id="eImageFile" type="file" accept="image/png,image/jpeg,image/webp,image/*" hidden>
+          <button id="eAdd" class="primary">加入公式D赔率追踪</button>
+          <button id="eRefresh" type="button">刷新列表</button>
+          <button id="eCloudRun" type="button">立即云端同步</button>
+          <!-- 公式D截图证据按钮已移除 -->
+          <button id="eExport" type="button">导出 D Excel</button>
+          <span id="eStatus" class="module-status">只需输入球队名称；开赛时间与赔率由系统填入。</span>
+          <span id="eCloudStatus" class="module-status">云端同步状态读取中…</span>
+        </div>
+      </section>
+      <section id="eBoard" class="panel e-board empty-state">输入今天的比赛名称后，公式D(赔率动态)会自动建立赔率追踪列表。</section>
+      <section id="eEvidencePanel" class="panel e-evidence-panel" hidden>
+        <div class="module-head">
+          <div><div class="eyebrow">AUDIT EVIDENCE</div><h2>公式D · 截图证据</h2></div>
+          <button id="eEvidenceClose" type="button">关闭</button>
+        </div>
+        <div id="eEvidenceStatus" class="rule-note">正在读取截图证据…</div>
+        <div id="eEvidenceGrid" class="e-evidence-grid"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/auth.js"></script>
+  <script src="/i18n.js"></script>
+  <script src="/usage-meter.js"></script>
+  <script src="/exceljs.min.js"></script>
+  <script src="/jszip.min.js"></script>
+  <script src="/formula-a-modules.js"></script>
+  <script src="/app.js"></script>
+  <script src="/bcd.js"></script>
+  <script src="/batch-ab.js"></script>
+  <script src="/formula-e.js"></script>
+  <script src="/image-team-reader.js"></script>
+</body>
+</html>

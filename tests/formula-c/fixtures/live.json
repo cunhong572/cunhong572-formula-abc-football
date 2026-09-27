@@ -1,0 +1,18 @@
+{
+  "strong": {"recent5ShotsFor":4,"recent5XgFor":0.5,"recent10ShotsFor":8,"recent10XgFor":1,"previous5ShotsFor":1,"previous5XgFor":0.05,"previous10ShotsFor":2,"previous10XgFor":0.1,"possession":55},
+  "quiet": {"recent5ShotsFor":0,"recent5XgFor":0,"recent10ShotsFor":0,"recent10XgFor":0,"previous5ShotsFor":0,"previous5XgFor":0,"previous10ShotsFor":0,"previous10XgFor":0,"possession":50},
+  "normalized": {"riNorm":60,"pslInvNorm":60,"darHighNorm":60,"tgRateNorm":60,"opslInvNorm":60,"tctInvNorm":60,"iaNorm":60,"scrNorm":60,"bprNorm":60,"tcrNorm":60},
+  "shots": [
+    {"teamId":1,"min":49,"expectedGoals":0.8},
+    {"teamId":1,"min":54.999,"expectedGoals":0.4},
+    {"teamId":1,"min":55,"expectedGoals":0.1},
+    {"teamId":1,"min":58,"expectedGoals":0.2},
+    {"teamId":1,"min":60,"expectedGoals":0.3},
+    {"teamId":2,"min":59,"expectedGoals":0.9}
+  ],
+  "events": [
+    {"teamId":1,"type":"Substitution","minute":58,"subOn":{"name":"Synthetic Forward","position":"ST"},"subOff":{"name":"Synthetic Defender","position":"CB"}},
+    {"teamId":1,"type":"YellowCard","card":"yellow","minute":59},
+    {"teamId":2,"type":"RedCard","card":"red","minute":59}
+  ]
+}
