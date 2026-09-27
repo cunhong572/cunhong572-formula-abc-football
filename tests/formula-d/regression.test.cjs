@@ -68,7 +68,7 @@ const limits = { timeline: 6, 'rollover-confirm': 3, initial: 3, manual: 3, 'hou
 for (const [kind, limit] of Object.entries(limits)) {
   test('retry limit and exhaustion: ' + kind, async () => {
     const calls = [];
-    const { subject } = load('api/formula-e-cloud-once.js', ['retryLimit', 'queueRetry'], {
+    const { subject } = load('lib/formula-d-odds/retry-policy.js', ['retryLimit', 'queueRetry'], {
       db: { query: async () => ({ rows: [] }) }, scheduler: { at: async (...args) => calls.push(args) },
     });
     assert.equal(subject.retryLimit(kind), limit);

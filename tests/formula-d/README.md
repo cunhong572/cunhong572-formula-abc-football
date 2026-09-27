@@ -14,6 +14,11 @@ production files; the reviewed runtime fixes remain in the checked-in module.
 No network clients, real credentials, database connections, migrations or
 Hatchable services are used. Unmocked external operations throw immediately.
 
+The harness resolves local module imports after the odds-module split. DOM
+callbacks are serialized into a separate VM with no module closure, matching
+the browser evaluation boundary. Retry-policy unit tests load that module
+directly; API handler tests continue to exercise the unchanged route entry.
+
 ## Fixtures and coverage
 
 Twenty-three fixed HTML fixtures cover normal first-half markets, simultaneous

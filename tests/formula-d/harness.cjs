@@ -7,6 +7,16 @@ const root = path.resolve(__dirname, '../..');
 // wiring/export syntax changes in memory; production files are never rewritten.
 function load(relative, names, bindings = {}) {
   const source = fs.readFileSync(path.join(root, relative), 'utf8');
+  const imports = {};
+  for (const match of source.matchAll(/^import \{([^}]+)\} from ["']([^"']+)["'];/gm)) {
+    if (match[2] === 'hatchable') continue;
+    const entries = match[1].split(',').map(s => s.trim().split(/\s+as\s+/));
+    const needed = entries.filter(([, alias], i) => !Object.hasOwn(bindings, alias || entries[i][0]));
+    if (!needed.length) continue;
+    const resolved = match[2].startsWith('.') ? path.join(path.dirname(relative), match[2]) : match[2];
+    const dependency = load(resolved, needed.map(([name]) => name), bindings).subject;
+    for (const [name, alias] of needed) imports[alias || name] = dependency[name];
+  }
   const code = source.replace(/^import .*;\r?\n/gm, '')
     .replace(/export default async function\(/, 'async function handler(')
     .replace(/^export /gm, '');
@@ -16,7 +26,7 @@ function load(relative, names, bindings = {}) {
     fetch: forbidden, setTimeout: forbidden,
     db: { query: forbidden }, scheduler: { at: forbidden },
     browser: { session: forbidden }, storage: new Proxy({}, { get: () => forbidden }),
-    ...bindings,
+    ...imports, ...bindings,
   });
   vm.runInContext(code + '\n;globalThis.subject = {' + names.join(',') + '};', context,
     { filename: relative, timeout: 2000 });
@@ -80,7 +90,10 @@ function fixture(name) {
 function parser(name) {
   const document = fixture(name);
   const module = load('lib/formula-e-cloud.js', ['extract'], { window: { document } });
-  return targets => module.subject.extract({ evaluate: (fn, args) => fn(args) }, targets);
+  // Model the browser boundary: serialized callbacks lose module closures.
+  return targets => module.subject.extract({ evaluate: (fn, args) =>
+    vm.runInNewContext('(' + fn.toString() + ')(__args)',
+      { window: { document }, __args: args }, { timeout: 2000 }) }, targets);
 }
 function clock(ms) { return class extends Date { constructor(...args) { super(...(args.length ? args : [ms])); } static now() { return ms; } }; }
 module.exports = { load, parser, clock };
