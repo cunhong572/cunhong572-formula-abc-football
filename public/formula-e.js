@@ -116,22 +116,33 @@ async function cloudStatus(){
    const j=await r.json().catch(()=>({})); if(!r.ok)throw new Error(j.error||"云端状态读取失败");
    const c=j.cloud||{};
    const audits=Array.isArray(c.recent_audits)?c.recent_audits:[];
-   const latestFailed=audits.filter(x=>x.status==="failed").slice(0,3);
-   const failText=latestFailed.length
-     ?" · 最近失败："+latestFailed.map(x=>x.home+" vs "+x.away+" ["+(x.stage||"UNKNOWN")+"]"+(x.detail?" "+x.detail:"")).join(" | ")
-     :"";
+   const timeline=audits.filter(x=>x.reason==="timeline"&&x.created_at);
+   let timelineText="";
+   if(timeline.length){
+     const newest=Math.max(...timeline.map(x=>Date.parse(x.created_at)||0));
+     const batch=timeline.filter(x=>Math.abs((Date.parse(x.created_at)||0)-newest)<=90000);
+     const ok=batch.filter(x=>x.status==="success");
+     const failed=batch.filter(x=>x.status==="failed");
+     const values=ok.map(x=>x.home+" vs "+x.away+" "+(x.selected_line||"")+" @"+(x.odds==null?"—":Number(x.odds).toFixed(2))).join("；");
+     const at=new Date(newest).toLocaleString("en-US",{timeZone:"America/New_York",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false});
+     timelineText=" · 最近正式 timeline "+at+"："+ok.length+"场成功"+(failed.length?" / "+failed.length+"场失败":"")+(values?" · "+values:"");
+   }
+   const paused=c.last_status==="paused";
+   const pauseText=paused?" · 当前：正式时间点优先，低优先级同步已暂停":"";
    if(c.credential_status==="missing"){
-     el.textContent="云端同步：等待配置 3573217 登录信息"+failText;
+     el.textContent="云端同步：等待配置 3573217 登录信息";
+   }else if(paused){
+     el.textContent="云端同步：运行中"+pauseText+timelineText;
    }else if(c.last_status==="ok"){
-     el.textContent="云端同步：正常 · 上次成功 "+(c.last_success_at?new Date(c.last_success_at).toLocaleString("en-US",{timeZone:"America/New_York",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}):"—")+" · 找到 "+(c.last_found||0)+" 场"+failText;
+     el.textContent="云端同步：正常"+timelineText;
    }else if(c.last_status==="partial"){
-     el.textContent="云端同步：部分匹配 · 找到 "+(c.last_found||0)+" 场 · "+(c.last_message||"仍有比赛未识别")+failText;
+     el.textContent="云端同步：部分匹配 · "+(c.last_message||"仍有比赛未识别")+timelineText;
    }else if(c.last_status==="match_failed"){
-     el.textContent="云端同步：匹配失败 · 找到 "+(c.last_found||0)+" 场 · "+(c.last_message||"未识别到目标比赛")+failText;
+     el.textContent="云端同步：本轮匹配失败 · "+(c.last_message||"未识别到目标比赛")+timelineText;
    }else if(c.last_status==="error"){
-     el.textContent="云端同步：最近失败 · "+(c.last_message||"请检查配置")+failText;
+     el.textContent="云端同步：最近失败 · "+(c.last_message||"请检查配置")+timelineText;
    }else{
-     el.textContent="云端同步：已启用，等待首次运行"+failText;
+     el.textContent="云端同步：已启用，等待首次运行"+timelineText;
    }
  }catch(e){el.textContent="云端同步状态："+(e.message||"读取失败");}
 }

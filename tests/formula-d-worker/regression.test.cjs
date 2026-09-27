@@ -216,6 +216,7 @@ test('formal cloud path reaches Favorites, persists original slot and audits cap
     db:{query:async(sql,p)=>{
       if(sql.startsWith('SELECT selected_line'))return {rows:[{selected_line:'1/1.5',current_odds:1.88}]};
       if(sql.startsWith('INSERT INTO formula_e_odds_snapshots')){writes.push(p);return {rows:[{id:1,capture_status:p[5]}]};}
+      if(sql.startsWith('SELECT capture_status'))return {rows:writes.filter(w=>w[0]===p[0]&&w[4]===p[1]&&w[1]===p[2]).map(w=>({capture_status:w[5]}))};
       if(sql.startsWith('INSERT INTO formula_e_scan_audit'))audits.push(p);
       return {rows:[]};
     }}

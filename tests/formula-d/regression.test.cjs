@@ -123,6 +123,7 @@ for (const [kind, remaining, expected] of [
     const checkpoint = at - (kind === 'last_5min' ? 300000 : 3600000);
     const module = cloud(['saveItems'], { Date: clock(at - remaining), db: { query: async (sql, params) => {
       if (sql.startsWith('INSERT INTO formula_e_odds_snapshots')) writes.push(params);
+      if (sql.startsWith('SELECT capture_status')) return { rows: writes.filter(p => p[0] === params[0] && p[4] === params[1] && p[1] === params[2]).map(p => ({ capture_status: p[5] })) };
       return { rows: sql.startsWith('SELECT selected_line') ? [{ selected_line: '1', current_odds: 1.88 }] : [] };
     } } });
     module.stub('scheduleNextTimeline', async () => {});
